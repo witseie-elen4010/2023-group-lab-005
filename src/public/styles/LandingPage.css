@@ -1,0 +1,21 @@
+#main {
+    margin-top: 5rem;
+  }
+  
+  .signin-btn {
+    border-radius: 0;
+    background: rgba(255, 171, 6, 0.88);
+    border-color: rgba(255, 171, 6, 0.88);
+    color: #fff;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+  
+  .register-btn {
+    border-radius: 0;
+    background: #fff;
+    border-color: rgba(255, 171, 6, 0.88);
+    color: #ffab06;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
