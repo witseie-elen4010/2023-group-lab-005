@@ -1,19 +1,19 @@
-<%- include('./Partials/header');%>
 
 <head>
-    <link rel="stylesheet" href="./public/styles/signinPage.css"
+    <link rel="stylesheet" href="./public/styles/signin.css">
     <title>Sign In</title>
 </head>
 
 
 <main id = "main">
+
+    <form class = "student-signing" action = "/login" method="POST">
+
      <div class="container">
      <h2>Sign In</h2>
      <input type="text" placeholder="Email">
      <input type="password" placeholder="Password">
      <button type="submit">Sign In</button>
      </div>
+    </form>
 </main>
-
-<!--  -->
-<%- include('./Partials/footer');%>
