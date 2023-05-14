@@ -7,7 +7,8 @@ const studentRouter = express.Router()
 //An object to dynamically interact with some of the EJS elements during rendering
 const LoginInfo = {
     userType: 'Student',
-    errorText: ''   //This will contain error texts to communicate wtih page during login
+    errorText: '' ,  //This will contain error texts to communicate wtih page during login
+    loginMessage: ''
 }
 
 //Where the page must go to if the login button is pressed 
@@ -30,9 +31,11 @@ const response = studentModel.validateLogins(logins)
 if(response.error ===true)
 {
     LoginInfo.errorText=response.errorMessage
+    LoginInfo.loginMessage = ''
 }
 else{
     LoginInfo.errorText = ''
+    LoginInfo.loginMessage = 'Succesfully Logged in'
 }
 
     //instruct the page to return the student loging page when its done executing 
