@@ -22,6 +22,7 @@ app.get('/', (req, res) => {
 // This tells the server to include the student router 
 app.use('/',studentRouter)
 
+
 app.listen(port, () => {
   console.log(`server at http://localhost:${port}`);
 });
