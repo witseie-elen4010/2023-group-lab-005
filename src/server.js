@@ -41,3 +41,5 @@ app.use(studentAuthRoutes)
 app.listen(port, () => {
   console.log(`server at http://localhost:${port}`)
 })
+
+module.exports = app
