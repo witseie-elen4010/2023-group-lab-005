@@ -5,8 +5,9 @@ name: Build and deploy Node.js app to Azure Web App - Consultify
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
@@ -25,6 +26,7 @@ jobs:
         run: |
           npm install
           npm run build --if-present
+          npm run test
           
 
       - name: Upload artifact for deployment job
