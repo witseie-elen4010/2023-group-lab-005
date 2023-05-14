@@ -27,7 +27,9 @@ const validateLogins = function(logings){
         return{error:true, errorMessage: 'Invalid User'}
     }
 
-    return{error: false, errorMessage: ''}
+    else {
+    return{error: false, errorMessage: '', username: filteredList[0].name }
+}
 }
 
 //callback function to be used for filtering the list of users

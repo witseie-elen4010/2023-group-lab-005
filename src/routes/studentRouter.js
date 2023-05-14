@@ -11,9 +11,18 @@ const LoginInfo = {
     loginMessage: ''
 }
 
+const userInfo = {
+    name: ''
+}
+
 //Where the page must go to if the login button is pressed 
 studentRouter.get('/login-student', (req,res)=>{
     res.render('studentSignIn', {signininfo: LoginInfo})
+})
+
+//Where a student will be taken after logging in
+studentRouter.get('/dashboard-student', (req,res)=>{
+    res.render('studentDashboard',{user: userInfo})
 })
 
 // Add a post method for recieving data from the login page
@@ -30,16 +39,21 @@ const response = studentModel.validateLogins(logins)
 
 if(response.error ===true)
 {
+    //if user login gives an error 
     LoginInfo.errorText=response.errorMessage
     LoginInfo.loginMessage = ''
+     //instruct the page to return the student loging page when its done executing 
+     res.redirect(req.baseUrl + '/login-student')
 }
 else{
+    //if user login doesnt have an error
     LoginInfo.errorText = ''
+    userInfo.name = response.username
     LoginInfo.loginMessage = 'Succesfully Logged in'
+    res.redirect(req.baseUrl + '/dashboard-student')
 }
 
-    //instruct the page to return the student loging page when its done executing 
-    res.redirect(req.baseUrl + '/login-student')
+   
 })
 
 module.exports = studentRouter
