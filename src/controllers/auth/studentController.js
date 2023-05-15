@@ -3,7 +3,7 @@ const Student = require('../../models/studentModel')
 
 // Render the sign-up form
 exports.getSignUp = (req, res) => {
-  res.render('auth/student/register')
+  res.render('./register')
 }
 
 // Handle sign-up form submission
@@ -36,7 +36,7 @@ exports.postSignUp = async (req, res) => {
     })
 
     // Redirect to the dashboard page
-    res.redirect('/dashboard')
+    res.redirect('/')
   } catch (err) {
     console.error(err)
     res.status(500).render('error', { errorMessage: 'Server error' })
