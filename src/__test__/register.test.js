@@ -1,6 +1,7 @@
 const request = require('supertest')
 const app = require('../server')
 const Student = require('../models/studentModel')
+require('dotenv').config()
 
 describe('Student registration', () => {
   afterEach(async () => {
