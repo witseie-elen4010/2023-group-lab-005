@@ -28,14 +28,15 @@ studentRouter.get('/dashboard-student', (req,res)=>{
 
 // Add a post method for recieving data from the login page
 studentRouter.post('/login', function(req,res){
-    console.log(req.body.email)
+    //console.log(req.body.email)
 
 
+    
 const logins = {
     email: req.body.email,
     password: req.body.password
 }
-
+/*
 const response = studentModel.validateLogins(logins)
 
 if(response.error ===true)
@@ -54,7 +55,7 @@ else{
     res.redirect(req.baseUrl + '/dashboard-student')
 }
 
-   
+   */
 })
 
 
@@ -63,6 +64,10 @@ studentRouter.get('/register-student', usersController.getSignUp)
 
 // Handle the sign-up form submission
 studentRouter.post('/register-student', usersController.postSignUp)
+
+
+studentRouter.get('/login-student', usersController.getLogin);
+studentRouter.post('/login-student', usersController.postLogin);
 
 module.exports = studentRouter
 

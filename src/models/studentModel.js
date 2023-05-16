@@ -28,9 +28,9 @@ studentSchema.methods.comparePassword = async function (candidatePassword) {
 
 const Student = mongoose.model('Student', studentSchema)
 
-const validateLogins= function(login){
+//const validateLogins= function(login){
 
-  return {error:true, errorMessage: 'User could not be validated'}
-}
+ // return {error:true, errorMessage: 'User could not be validated'}
+//}
 
-module.exports = {Student, validateLogins}
+module.exports = Student
