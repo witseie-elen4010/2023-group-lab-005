@@ -37,4 +37,46 @@ describe('Student registration', () => {
     expect(response.statusCode).toBe(302) // redirect after successful registration
     // ... add code to check that a confirmation email was sent ...
   })
+
+})
+
+
+describe('Sign-in page', () => {
+  test('User cannot sign in with incorrect email or password', async () => {
+    const signInData = {
+      email: 'wrongemail@example.com',
+      password: 'wrongpassword',
+    };
+
+    const response = await request(app)
+      .post('/login-student')
+      .send(signInData);
+
+    expect(response.statusCode).toBe(302); // Expecting a redirect after unsuccessful sign-in
+    expect(response.headers.location).toBe('login-student'); // Expecting a redirect back to the login page
+  });
+
+  test('User can sign in with correct email and password', async () => {
+    // Create a test student in the database
+    const testStudent = new Student({
+      name: 'Test User',
+      email: 'testuser@example.com',
+      password: 'testpassword'
+    })
+
+    await testStudent.save()
+
+    const signInData = {
+      email: 'testuser@example.com',
+      password: 'testpassword'
+    }
+
+    const response = await request(app)
+      .post('/login-student')
+      .send(signInData);
+
+    expect(response.statusCode).toBe(302); // Expecting a redirect after successful sign-in
+    expect(response.headers.location).toBe('/'); // Expecting a redirect to the dashboard page
+    // You can also check for additional things like a successful cookie being set, etc.
+  });
 })
