@@ -77,7 +77,7 @@ describe('Sign-in page', () => {
       .send(signInData);
 
     expect(response.statusCode).toBe(302); // Expecting a redirect after successful sign-in
-    expect(response.headers.location).toBe('/'); // Expecting a redirect to the dashboard page
+    expect(response.headers.location).toBe('dashboard-student'); // Expecting a redirect to the dashboard page
     // You can also check for additional things like a successful cookie being set, etc.
   });
 })

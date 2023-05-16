@@ -74,5 +74,7 @@ studentRouter.post('/register-student', usersController.postSignUp)
 studentRouter.get('/login-student', usersController.getLogin);
 studentRouter.post('/login-student', usersController.postLogin);
 
+studentRouter.get('/dashboard-student', usersController.getStudentDashboard)
+
 module.exports = studentRouter
 
