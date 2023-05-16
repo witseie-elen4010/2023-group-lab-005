@@ -6,6 +6,7 @@ const studentModel = require('../models/studentModel.js')
 const studentRouter = express.Router()
 
 //An object to dynamically interact with some of the EJS elements during rendering
+/*
 const LoginInfo = {
     userType: 'Student',
     errorText: '' ,  //This will contain error texts to communicate wtih page during login
@@ -15,12 +16,15 @@ const LoginInfo = {
 const userInfo = {
     name: ''
 }
-
+*/
 //Where the page must go to if the login button is pressed 
+/*
 studentRouter.get('/login-student', (req,res)=>{
     res.render('studentSignIn', {signininfo: LoginInfo})
 })
+*/
 
+/*
 //Where a student will be taken after logging in
 studentRouter.get('/dashboard-student', (req,res)=>{
     res.render('studentDashboard',{user: userInfo})
@@ -36,6 +40,7 @@ const logins = {
     email: req.body.email,
     password: req.body.password
 }
+*/
 /*
 const response = studentModel.validateLogins(logins)
 
@@ -55,9 +60,9 @@ else{
     res.redirect(req.baseUrl + '/dashboard-student')
 }
 
-   */
+   
 })
-
+*/
 
 // Render the sign-up form
 studentRouter.get('/register-student', usersController.getSignUp)

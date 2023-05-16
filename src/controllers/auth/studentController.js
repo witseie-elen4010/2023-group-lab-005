@@ -18,14 +18,14 @@ exports.postSignUp = async (req, res) => {
 
   try {
     // Check if a user with the provided email already exists
-    const existingStudent = await StudentModel.Student.findOne({ email })
+    const existingStudent = await StudentModel.findOne({ email })
     if (existingStudent) {
       req.flash('error', 'An account with this email already exists')
       return res.redirect('register-student')
     }
 
     // Create a new user with the provided details
-    const student = new StudentModel.Student({ name, email, password })
+    const student = new StudentModel({ name, email, password })
     await student.save()
 
     // Generate JWT token and set it as a cookie
@@ -47,39 +47,46 @@ exports.postSignUp = async (req, res) => {
 
 // Render the login form
 exports.getLogin = (req, res) => {
-  res.render('./studentSignin');
-};
+  res.render('./studentSignin')
+}
 
 // Handle login form submission
 exports.postLogin = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body
 
   try {
     // Check if a student with the provided email exists
-    const student = await StudentModel.findOne({ email });
+    const student = await StudentModel.findOne({ email })
     if (!student) {
-      req.flash('error', 'Invalid email or password');
-      return res.redirect('login-student');
+      req.flash('error', 'Invalid email or password')
+      return res.redirect('login-student')
     }
 
     // Compare the provided password with the stored hashed password
-    const passwordMatch = await bcrypt.compare(password, student.password);
+    /*
+    const passwordMatch = await bcrypt.compare(password, student.password)
     if (!passwordMatch) {
-      req.flash('error', 'Invalid email or password');
-      return res.redirect('login-student');
+      req.flash('error', 'Invalid email or password')
+      return res.redirect('login-student')
+      
+    }
+*/
+    if(student)
+    {
+      return res.redirect('/')
     }
 
     // Generate JWT token and set it as a cookie
-    const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET);
+    const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET)
     res.cookie('jwt', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
     });
 
     // Redirect to the dashboard page
-    res.redirect('/');
+    res.redirect('/')
   } catch (err) {
-    console.error(err);
-    res.status(500).render('error', { errorMessage: 'Server error' });
+    console.error(err)
+    res.status(500).render('error', { errorMessage: 'Server error' })
   }
-};
+}
