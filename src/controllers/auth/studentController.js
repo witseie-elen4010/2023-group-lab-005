@@ -1,5 +1,9 @@
 const jwt = require('jsonwebtoken')
 const StudentModel = require('../../models/studentModel')
+let user = {
+  name:''
+}
+
 
 // Render the sign-up form
 exports.getSignUp = (req, res) => {
@@ -75,6 +79,7 @@ exports.postLogin = async (req, res) => {
   
     if(student.password===password)
     {
+      user.name = student.name
       return res.redirect('dashboard-student')
     }
 
@@ -94,5 +99,5 @@ exports.postLogin = async (req, res) => {
 }
 
 exports.getStudentDashboard = (req, res) =>{
-  res.render('./studentDashboard')
+  res.render('./studentDashboard',{userInfo:user})
 }
