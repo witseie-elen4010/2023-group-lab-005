@@ -47,12 +47,12 @@ exports.postSignUp = async (req, res) => {
 };
 
 // Render the sign-in form
-exports.getSignIn = (req, res) => {
-  res.render("./auth/lecturer/signin");
+exports.getLogin = (req, res) => {
+  res.render("./lecturerSignIn");
 };
 
 // Handle sign-in form submission
-exports.postSignIn = async (req, res) => {
+exports.postLogin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -88,3 +88,5 @@ exports.postSignIn = async (req, res) => {
     res.status(500).render("error", { errorMessage: "Server error" });
   }
 };
+
+
