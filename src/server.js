@@ -41,9 +41,6 @@ app.get('/', function (req, res) {
   res.render('LandingPage')
 })
 
-app.get('/dashboard', function (req, res) {
-  res.render('studentDashboard')
-})
 app.use(studentAuthRoutes)
 app.use(lecturerAuthRoutes)
 
