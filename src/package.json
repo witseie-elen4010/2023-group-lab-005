@@ -18,7 +18,6 @@
     "express-flash": "^0.0.2",
     "express-session": "^1.17.3",
     "jsonwebtoken": "^9.0.0",
-    "jtest": "^0.0.1",
     "mongoose": "^7.1.1",
     "supertest": "^6.3.3"
   },
