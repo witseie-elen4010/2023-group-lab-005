@@ -42,7 +42,7 @@ describe('Student registration', () => {
 })
 
 
-describe('Sign-in page', () => {
+describe('Student sign-in page', () => {
   test('User cannot sign in with incorrect email or password', async () => {
     const signInData = {
       email: 'wrongemail@example.com',
@@ -57,7 +57,7 @@ describe('Sign-in page', () => {
     expect(response.headers.location).toBe('login-student'); // Expecting a redirect back to the login page
   });
 
-  test('User can sign in with correct email and password', async () => {
+  test('Student can sign in with correct email and password', async () => {
     // Create a test student in the database
     const testStudent = new Student({
       name: 'Test User',
@@ -117,4 +117,44 @@ describe('Lecturer registration', () => {
     // ... add code to check that a confirmation email was sent ...
   })
 
+})
+
+describe('Lecturer sign-in page', () => {
+  test('User cannot sign in with incorrect email or password', async () => {
+    const signInData = {
+      email: 'wrongemail@example.com',
+      password: 'wrongpassword',
+    };
+
+    const response = await request(app)
+      .post('/login-lecturer')
+      .send(signInData);
+
+    expect(response.statusCode).toBe(302); // Expecting a redirect after unsuccessful sign-in
+    expect(response.headers.location).toBe('/login-lecturer'); // Expecting a redirect back to the login page
+  });
+
+  test('Lecturer can sign in with correct email and password', async () => {
+    // Create a test lecturer in the database
+    const testLecturer = new Lecturer({
+      name: 'Test User',
+      email: 'testuser@example.com',
+      password: 'testpassword'
+    })
+
+    await testLecturer.save()
+
+    const signInData = {
+      email: 'testuser@example.com',
+      password: 'testpassword'
+    }
+
+    const response = await request(app)
+      .post('/login-lecturer')
+      .send(signInData);
+
+    expect(response.statusCode).toBe(302); // Expecting a redirect after successful sign-in
+    expect(response.headers.location).toBe('dashboard-lecturer'); // Expecting a redirect to the dashboard page
+    // You can also check for additional things like a successful cookie being set, etc.
+  });
 })
