@@ -70,10 +70,12 @@ exports.postLogin = async (req, res) => {
       return res.redirect('login-student')
       
     }
+    
 */
-    if(student)
+  
+    if(student.password===password)
     {
-      return res.redirect('/')
+      return res.redirect('dashboard-student')
     }
 
     // Generate JWT token and set it as a cookie
@@ -89,4 +91,8 @@ exports.postLogin = async (req, res) => {
     console.error(err)
     res.status(500).render('error', { errorMessage: 'Server error' })
   }
+}
+
+exports.getStudentDashboard = (req, res) =>{
+  res.render('./studentDashboard')
 }
