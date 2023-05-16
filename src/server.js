@@ -4,6 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser')
 
 const studentAuthRoutes = require('./routes/studentRouter')
+const lecturerAuthRoutes = require('./routes/lecturerRouter')
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -44,9 +45,13 @@ app.get('/dashboard', function (req, res) {
   res.render('studentDashboard')
 })
 app.use(studentAuthRoutes)
+app.use(lecturerAuthRoutes)
 
 // This tells the server to include the student router 
 app.use('/',studentAuthRoutes)
+
+// This tells the server to include the lecturer router 
+app.use('/',lecturerAuthRoutes)
 
 
 app.listen(port, () => {
