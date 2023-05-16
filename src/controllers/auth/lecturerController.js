@@ -3,7 +3,7 @@ const Lecturer = require("../../models/lecturerModel");
 
 // Render the sign-up form
 exports.getSignUp = (req, res) => {
-  res.render("./auth/lecturer/register");
+  res.render("../views/lecturerRegister");
 };
 
 // Handle sign-up form submission
