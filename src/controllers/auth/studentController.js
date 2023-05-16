@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken')
-const Student = require('../../models/studentModel')
+const StudentModel = require('../../models/studentModel')
 
 // Render the sign-up form
 exports.getSignUp = (req, res) => {
@@ -18,14 +18,14 @@ exports.postSignUp = async (req, res) => {
 
   try {
     // Check if a user with the provided email already exists
-    const existingStudent = await Student.findOne({ email })
+    const existingStudent = await StudentModel.Student.findOne({ email })
     if (existingStudent) {
       req.flash('error', 'An account with this email already exists')
       return res.redirect('register-student')
     }
 
     // Create a new user with the provided details
-    const student = new Student({ name, email, password })
+    const student = new StudentModel.Student({ name, email, password })
     await student.save()
 
     // Generate JWT token and set it as a cookie

@@ -48,7 +48,7 @@ app.get('/dashboard', function (req, res) {
 app.use(studentAuthRoutes)
 
 // This tells the server to include the student router 
-app.use('/',studentRouter)
+app.use('/',studentAuthRoutes)
 
 
 app.listen(port, () => {
