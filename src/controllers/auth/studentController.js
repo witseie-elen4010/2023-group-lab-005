@@ -3,7 +3,7 @@ const StudentModel = require('../../models/studentModel')
 
 // Render the sign-up form
 exports.getSignUp = (req, res) => {
-  res.render('./register')
+  res.render('./studentRegister')
 }
 
 // Handle sign-up form submission
