@@ -1,15 +1,22 @@
-const express = require('express')
-const app = express()
-const port = process.env.PORT || 5000
+const express = require('express');
+
+//This is a library that will allow our program to parse html/ejs content as json objects
+const bodyParser = require('body-parser')
+
 const studentAuthRoutes = require('./routes/studentRouter')
+
+const app = express();
+const port = process.env.PORT || 5000;
 
 const connectDB = require('./db')
 const flash = require('express-flash')
 const session = require('express-session')
 
-app.use('/public/', express.static('./public'))
+//instruct our app to use json bodyu parser 
+app.use(bodyParser.json()).use(bodyParser.urlencoded({extended:true}))
 
-app.set('view engine', 'ejs')
+app.set('view engine', 'ejs');
+app.use('/public/', express.static('./public'))
 
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
@@ -37,6 +44,10 @@ app.get('/dashboard', function (req, res) {
   res.render('studentDashboard')
 })
 app.use(studentAuthRoutes)
+
+// This tells the server to include the student router 
+app.use('/',studentAuthRoutes)
+
 
 app.listen(port, () => {
   console.log(`server at http://localhost:${port}`)
