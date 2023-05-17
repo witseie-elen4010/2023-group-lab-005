@@ -3,7 +3,7 @@ const Lecturer = require("../../models/lecturerModel");
 
 // Render the sign-up form
 exports.getSignUp = (req, res) => {
-  res.render("../views/lecturerRegister");
+  res.render("./auth/lecturer/register");
 };
 
 // Handle sign-up form submission
@@ -71,18 +71,19 @@ exports.postSignIn = async (req, res) => {
       return res.status(401).redirect("/login-lecturer");
     }
 
-    // Generate JWT token and set it as a cookie
+    // Generate JWT token
     const token = jwt.sign(
-      { lecturerId: lecturer._id },
+      { lecturerId: lecturer._id, email: lecturer.email },
       process.env.JWT_SECRET
     );
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-    });
+
+    // Store the token, ID, and email in the session
+    req.session.token = token;
+    req.session.lecturerId = lecturer._id;
+    req.session.email = lecturer.email;
 
     // Redirect to the dashboard page
-    res.redirect("/");
+    res.redirect("/set-lecturer-availability");
   } catch (err) {
     console.error(err);
     res.status(500).render("error", { errorMessage: "Server error" });

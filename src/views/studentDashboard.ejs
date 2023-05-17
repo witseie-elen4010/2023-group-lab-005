@@ -1,14 +1,152 @@
-<%- include('./Partials/header');%>
-
+<%- include('./Partials/inAppheader');%>
 <head>
-    <h1>
-        <p>
-            Hello, <%= userInfo.name %>
-        </p>
-        <p>
-            Welcome to your dashboard! 
-        </p>
-    </h1>
+  <link rel="stylesheet" href="./public/styles/studentDashboard.css" />
 </head>
+<main class="container mt-5">
+  <div class="row">
+    <div class="col-12 col-md-6 col-sm-12">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Your Upcoming Consultations</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row">
+              <div class="col-md-3">
+                <img
+                  class="mb-3"
+                  src="./public/images/upcoming.png"
+                  width="50%"
+                />
+              </div>
+              <div class="col-md-3">
+                <div class="row"><p>Prof Steve</p></div>
+                <div class="row">
+                  <p style="color: #aaa; font-weight: 300; font-size: small">
+                    5 students
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="row"><p>5 May</p></div>
+                <div class="row">
+                  <p style="color: #aaa; font-weight: 300; font-size: small">
+                    12:00PM
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-3 mt-4">
+                <button type="button" class="btn btn-warning leave-btn">
+                  <p class="btn-text">Leave</p>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="row">
+              <div class="col-md-3">
+                <img
+                  class="mb-3"
+                  src="./public/images/upcoming.png"
+                  width="50%"
+                />
+              </div>
+              <div class="col-md-3">
+                <div class="row"><p>Sir Newton</p></div>
+                <div class="row">
+                  <p style="color: #aaa; font-weight: 300; font-size: small">
+                    11 students
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="row"><p>5 May</p></div>
+                <div class="row">
+                  <p style="color: #aaa; font-weight: 300; font-size: small">
+                    12:00PM
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-3 mt-4">
+                <button type="button" class="btn btn-warning leave-btn">
+                  <p class="btn-text">Leave</p>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td class="row">
+              <div class="col-md-3">
+                <img
+                  class="mb-3"
+                  src="./public/images/upcoming.png"
+                  width="50%"
+                />
+              </div>
+              <div class="col-md-3">
+                <div class="row"><p>Dr Xris</p></div>
+                <div class="row">
+                  <p style="color: #aaa; font-weight: 300; font-size: small">
+                    7 students
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="row"><p>5 May</p></div>
+                <div class="row">
+                  <p style="color: #aaa; font-weight: 300; font-size: small">
+                    12:00PM
+                  </p>
+                </div>
+              </div>
+              <div class="col-md-3 mt-4">
+                <button type="button" class="btn btn-warning leave-btn">
+                  <p class="btn-text">Leave</p>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-12 col-md-6 col-sm-12">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Other Upcoming Consultations</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="row">
+              <div class="col-md-3">Column 1</div>
+              <div class="col-md-3">Column 2</div>
+              <div class="col-md-3">Column 3</div>
+              <div class="col-md-3">Column 4</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="row">
+              <div class="col-md-3">Column 1</div>
+              <div class="col-md-3">Column 2</div>
+              <div class="col-md-3">Column 3</div>
+              <div class="col-md-3">Column 4</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="row">
+              <div class="col-md-3">Column 1</div>
+              <div class="col-md-3">Column 2</div>
+              <div class="col-md-3">Column 3</div>
+              <div class="col-md-3">Column 4</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
 
 <%- include('./Partials/footer');%>
