@@ -21,22 +21,25 @@ const lecturerSchema = new mongoose.Schema({
         enum: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
         required: true,
       },
-      slots: [
-        {
-          startTime: {
-            type: String,
-            required: true,
+      slots: {
+        type: [
+          {
+            startTime: {
+              type: String,
+              required: true,
+            },
+            endTime: {
+              type: String,
+              required: true,
+            },
+            maxStudents: {
+              type: Number,
+              required: true,
+            },
           },
-          endTime: {
-            type: String,
-            required: true,
-          },
-          maxStudents: {
-            type: Number,
-            required: true,
-          },
-        },
-      ],
+        ],
+        default: [],
+      },
     },
   ],
 });

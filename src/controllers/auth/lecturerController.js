@@ -1,14 +1,9 @@
 const jwt = require("jsonwebtoken");
 const Lecturer = require("../../models/lecturerModel");
-let user = {
-  name:'',
-  userType:'lecturer',
-  loginAction:"/login-lecturer"
-}
 
 // Render the sign-up form
 exports.getSignUp = (req, res) => {
-  res.render("../views/lecturerRegister");
+  res.render("./auth/lecturer/register");
 };
 
 // Handle sign-up form submission
@@ -52,12 +47,12 @@ exports.postSignUp = async (req, res) => {
 };
 
 // Render the sign-in form
-exports.getLogin = (req, res) => {
-  res.render("./lecturerSignIn",{userInfo: user});
+exports.getSignIn = (req, res) => {
+  res.render("./auth/lecturer/signin");
 };
 
 // Handle sign-in form submission
-exports.postLogin = async (req, res) => {
+exports.postSignIn = async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -68,7 +63,7 @@ exports.postLogin = async (req, res) => {
       req.flash("error", "Invalid email or password");
       return res.status(401).redirect("/login-lecturer");
     }
-    
+
     // Check if provided password is correct
     const isPasswordValid = password === lecturer.password;
     if (!isPasswordValid) {
@@ -76,32 +71,21 @@ exports.postLogin = async (req, res) => {
       return res.status(401).redirect("/login-lecturer");
     }
 
-    if(lecturer.password===password)
-    {
-      user.name = lecturer.name
-      return res.redirect('dashboard-lecturer')
-    }
-
-    // Generate JWT token and set it as a cookie
+    // Generate JWT token
     const token = jwt.sign(
-      { lecturerId: lecturer._id },
+      { lecturerId: lecturer._id, email: lecturer.email },
       process.env.JWT_SECRET
     );
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-    });
+
+    // Store the token, ID, and email in the session
+    req.session.token = token;
+    req.session.lecturerId = lecturer._id;
+    req.session.email = lecturer.email;
 
     // Redirect to the dashboard page
-    res.redirect("/");
+    res.redirect("/set-lecturer-availability");
   } catch (err) {
     console.error(err);
     res.status(500).render("error", { errorMessage: "Server error" });
   }
 };
-
-exports.getLecturerDashboard = (req, res) =>{
-  res.render('./lecturerDashboard',{userInfo:user})
-}
-
-
