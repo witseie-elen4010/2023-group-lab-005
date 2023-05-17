@@ -1,5 +1,10 @@
 const jwt = require("jsonwebtoken");
 const Lecturer = require("../../models/lecturerModel");
+let user = {
+  name:'',
+  userType:'lecturer',
+  loginAction:"/login-lecturer"
+}
 
 // Render the sign-up form
 exports.getSignUp = (req, res) => {
@@ -47,12 +52,12 @@ exports.postSignUp = async (req, res) => {
 };
 
 // Render the sign-in form
-exports.getSignIn = (req, res) => {
-  res.render("./auth/lecturer/signin");
+exports.getLogin = (req, res) => {
+  res.render("./lecturerSignIn",{userInfo: user});
 };
 
 // Handle sign-in form submission
-exports.postSignIn = async (req, res) => {
+exports.postLogin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -63,12 +68,18 @@ exports.postSignIn = async (req, res) => {
       req.flash("error", "Invalid email or password");
       return res.status(401).redirect("/login-lecturer");
     }
-
+    
     // Check if provided password is correct
     const isPasswordValid = password === lecturer.password;
     if (!isPasswordValid) {
       req.flash("error", "Invalid email or password");
       return res.status(401).redirect("/login-lecturer");
+    }
+
+    if(lecturer.password===password)
+    {
+      user.name = lecturer.name
+      return res.redirect('dashboard-lecturer')
     }
 
     // Generate JWT token and set it as a cookie
@@ -88,3 +99,9 @@ exports.postSignIn = async (req, res) => {
     res.status(500).render("error", { errorMessage: "Server error" });
   }
 };
+
+exports.getLecturerDashboard = (req, res) =>{
+  res.render('./lecturerDashboard',{userInfo:user})
+}
+
+

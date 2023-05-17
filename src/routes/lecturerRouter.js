@@ -8,4 +8,9 @@ lecturerRouter.get("/register-lecturer", lecturerController.getSignUp);
 // Handle the sign-up form submission
 lecturerRouter.post("/register-lecturer", lecturerController.postSignUp);
 
+lecturerRouter.get('/login-lecturer', lecturerController.getLogin);
+lecturerRouter.post('/login-lecturer', lecturerController.postLogin);
+
+lecturerRouter.get('/dashboard-lecturer', lecturerController.getLecturerDashboard)
+
 module.exports = lecturerRouter;

@@ -1,7 +1,9 @@
 const jwt = require('jsonwebtoken')
 const StudentModel = require('../../models/studentModel')
 let user = {
-  name:''
+  name:'',
+  userType:'student',
+  loginAction:"/login-student"
 }
 
 
@@ -51,7 +53,7 @@ exports.postSignUp = async (req, res) => {
 
 // Render the login form
 exports.getLogin = (req, res) => {
-  res.render('./studentSignin')
+  res.render('./studentSignin',{userInfo: user})
 }
 
 // Handle login form submission
