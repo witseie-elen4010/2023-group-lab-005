@@ -12,6 +12,12 @@
       integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
       crossorigin="anonymous"
     />
+
+    <!-- Font Awesome CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body>
     <nav
@@ -36,53 +42,18 @@
         aria-controls="navbarNav"
         aria-expanded="false"
         aria-label="Toggle navigation"
-        style="color: red"
       >
-        <span class="navbar-toggler-icon" style="filter: invert(100%)"></span>
+        <span class="navbar-toggler-icon style="filter: invert(100%)"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item" style="padding-right: 2rem">
-            <div class="dropdown">
-              <button
-                class="btn btn-secondary dropdown-toggle"
-                type="button"
-                id="registerDropdown"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-                style="background-color: #031a39; border-color: #031a39"
-              >
-                Register
-              </button>
-              <div class="dropdown-menu" aria-labelledby="registerDropdown">
-                <a class="dropdown-item" href="/register-student">Student</a>
-                <a class="dropdown-item" href="/register-lecturer">Lecturer</a>
-              </div>
-            </div>
+          <li class="nav-item mt-2" style="padding-right: 2rem; color: white">
+            <a href="/see-lecturer-availability" style="color: white"
+              ><i class="fa-regular fa-pen-to-square"></i> <span>Book</span></a
+            >
           </li>
-          <li class="nav-item">
-            <div class="dropdown">
-              <button
-                class="btn btn-secondary dropdown-toggle"
-                type="button"
-                id="registerDropdown"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-                style="
-                  background-color: #031a39;
-                  border-color: #031a39;
-                  color: #ffab06;
-                "
-              >
-                Sign in
-              </button>
-              <div class="dropdown-menu" aria-labelledby="registerDropdown">
-                <a class="dropdown-item" href="/login-student">Student</a>
-                <a class="dropdown-item" href="/login-lecturer">Lecturer</a>
-              </div>
-            </div>
+          <li class="nav-item mt-2" style="color: #ffab06">
+            <i class="fa-regular fa-circle-user fa-lg"></i>
           </li>
         </ul>
       </div>
@@ -104,5 +75,9 @@
       integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
       crossorigin="anonymous"
     ></script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
   </body>
 </html>

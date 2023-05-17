@@ -1,4 +1,17 @@
 .footer {
+  position: absolute;
+  left: 0;
+  /* bottom: 0; */
+  width: 100%;
+  background-color: #031a39;
+  color: white;
+  text-align: center;
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+}
+
+@media (min-width: 576px) {
+  .footer {
     position: absolute;
     left: 0;
     bottom: 0;
@@ -9,3 +22,18 @@
     padding-top: 2.5rem;
     padding-bottom: 2.5rem;
   }
+}
+
+@media (min-width: 991.98px) {
+  .footer {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #031a39;
+    color: white;
+    text-align: center;
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+}

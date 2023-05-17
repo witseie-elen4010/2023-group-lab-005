@@ -1,0 +1,150 @@
+<%- include('./Partials/inAppheaderLec'); %>
+
+<main class="d-flex justify-content-center align-items-center flex-column mt-5">
+  <% if (lecturer.availability && lecturer.availability.length > 0) { %>
+  <h5 style="text-align: center"><%= lecturer.name %></h5>
+
+  <% let groupedSlots = {}; %> <% lecturer.availability.forEach((slot) => { %>
+  <% if (slot.slots.length > 0) { %> <% slot.slots.forEach((timeSlot) => { %> <%
+  if (!groupedSlots[slot.day]) { %> <% groupedSlots[slot.day] = []; %> <% } %>
+  <% groupedSlots[slot.day].push(timeSlot); %> <% }); %> <% } %> <% }); %> <%
+  Object.keys(groupedSlots).forEach((day) => { %>
+  <h6 style="margin-top: 2rem"><%= day %></h6>
+
+  <table class="table sm-table table-bordered" style="width: 60%">
+    <thead style="background-color: #ffab06">
+      <tr>
+        <th>Start Time</th>
+        <th>End Time</th>
+        <th>Max Students</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% groupedSlots[day].forEach((timeSlot) => { %>
+      <tr>
+        <td><%= timeSlot.startTime %></td>
+        <td><%= timeSlot.endTime %></td>
+        <td><%= timeSlot.maxStudents %></td>
+        <td class="text-center">
+          <button
+            class="btn btn-primary"
+            onclick="editSlot('<%= lecturer._id %>', '<%= timeSlot._id %>')"
+          >
+            <i class="fa-regular fa-pen-to-square"></i>
+          </button>
+          <button
+            class="btn btn-danger"
+            onclick="deleteSlot('<%= lecturer._id %>', '<%= timeSlot._id %>')"
+          >
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+        </td>
+      </tr>
+      <% }); %>
+    </tbody>
+  </table>
+  <% }); %> <% } else { %>
+  <p>No available slots for <%= lecturer.name %></p>
+  <% } %>
+</main>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="exampleModalCenter"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5
+          class="modal-title"
+          id="exampleModalCenterTitle"
+          style="margin-left: auto"
+        >
+          Add a slot
+        </h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form
+          method="POST"
+          action="/lecturer-availability"
+          style="width: 50%; margin-left: auto; margin-right: auto"
+        >
+          <div class="form-group">
+            <label for="day">Select day:</label>
+            <select id="day" name="day" class="form-control" required>
+              <option value="" disabled selected>Select day</option>
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="slots">Set start and end time</label>
+            <div id="slots" class="slot">
+              <input
+                type="time"
+                name="start[]"
+                class="form-control mb-2"
+                required
+              />
+              <input
+                type="time"
+                name="end[]"
+                class="form-control mb-2"
+                required
+              />
+              <input
+                type="number"
+                name="maxStudents[]"
+                class="form-control"
+                placeholder="Max students"
+                required
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="
+              width: 100%;
+              background-color: #031a39;
+              border-color: #031a39;
+            "
+          >
+            Save availability
+          </button>
+        </form>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+<script>
+  function editSlot(lecturerId, slotId) {
+    // Logic to handle edit action
+    console.log("Edit slot", lecturerId, slotId);
+  }
+
+  function deleteSlot(lecturerId, slotId) {
+    // Logic to handle delete action
+    console.log("Delete slot", lecturerId, slotId);
+  }
+</script>
