@@ -31,6 +31,12 @@ router.get(
   availabilityController.getLecturerById
 );
 
+// Request the deletion of the lecturer consultation slot
+router.delete(
+  "/delete-consultation-slot",
+  availabilityController.deleteConsultationSlot
+);
+
 
 
 module.exports = router;
