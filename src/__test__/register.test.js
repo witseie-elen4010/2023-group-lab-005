@@ -8,7 +8,7 @@ describe("Student registration", () => {
   afterEach(async () => {
     // Clean up the database after each test
     await Student.deleteMany();
-  }, 10000); // Add timeout option here with a higher value in milliseconds
+  }, 10000);
 
   test("New student can see sign-up form with name, email, and password fields", async () => {
     const response = await request(app).get("/register-student");
