@@ -144,6 +144,26 @@ describe("Lecturer login", () => {
     expect(response.statusCode).toBe(302); // redirect after successful login
   });
 
+  test("Logged in lecturer can sign out and end up on the landing page", async () => {
+    // Log in the lecturer
+    const loginData = {
+      email: "janesmith@example.com",
+      password: "password",
+    };
+
+    let response = await request(app).post("/login-lecturer").send(loginData);
+
+    expect(response.statusCode).toBe(302); // redirect after successful login
+
+    // Sign out the lecturer
+    response = await request(app).get("/sign-out");
+
+    expect(response.statusCode).toBe(302); // redirect after successful logout
+
+    // Check if we end up on the landing page
+    expect(response.headers.location).toBe('/'); // Assuming '/' is your landing page route
+});
+
   test("Existing lecturer cannot log in with incorrect password", async () => {
     const loginData = {
       email: "janesmith@example.com",
@@ -155,3 +175,5 @@ describe("Lecturer login", () => {
     expect(response.statusCode).toBe(302); // unauthorized status code
   });
 });
+
+
