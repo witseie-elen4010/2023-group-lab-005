@@ -14,6 +14,9 @@ router.get("/login-lecturer", lecturerController.getSignIn);
 // Handle the sign-in form submission
 router.post("/login-lecturer", lecturerController.postSignIn);
 
+// Handle sign-out
+router.get("/sign-out", lecturerController.signOut);
+
 // GET request for lecturer availability form
 router.get(
   "/lecturer-availability",
@@ -36,6 +39,8 @@ router.delete(
   "/delete-consultation-slot",
   availabilityController.deleteConsultationSlot
 );
+
+
 
 
 

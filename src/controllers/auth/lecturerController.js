@@ -89,3 +89,7 @@ exports.postSignIn = async (req, res) => {
     res.status(500).render("error", { errorMessage: "Server error" });
   }
 };
+
+exports.signOut = (req, res) => {
+  res.redirect("/");
+};
