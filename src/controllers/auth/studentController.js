@@ -82,3 +82,13 @@ exports.postSignIn = async (req, res) => {
     res.status(500).render("error", { errorMessage: "Server error" });
   }
 };
+exports.bookConsultation = async (req, res) => {
+  const { studentId, lecturerId, slotId } = req.body;
+
+  // Find the student and update their booked consultations
+  const student = await Student.findById(studentId);
+  student.bookedConsultations.push({ lecturerId, slotId });
+  await student.save();
+
+  res.redirect("/dashboard");
+};

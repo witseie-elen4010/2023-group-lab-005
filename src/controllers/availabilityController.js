@@ -47,7 +47,19 @@ exports.postLecturerAvailabilityForm = async (req, res) => {
   }
 };
 
+// Retrieve all lecturers and their availability
+exports.getAllLecturers = async (req, res) => {
+  try {
+    // Find all lecturers
+    const lecturers = await Lecturer.find();
 
+    // Render the view with the lecturers data
+    res.render("lecturerAvailability", { lecturers });
+  } catch (err) {
+    console.error(err);
+    res.status(500).render("error", { errorMessage: "Server error" });
+  }
+};
 exports.getLecturerById = async (req, res) => {
   const { token, lecturerId, email } = req.session;
 
@@ -58,4 +70,15 @@ exports.getLecturerById = async (req, res) => {
     console.error(error);
     res.status(500).send("Error retrieving lecturer");
   }
+};
+exports.bookSlot = async (req, res) => {
+  const { lecturerId, slotId } = req.body;
+
+  // Find the lecturer and update their availability
+  const lecturer = await Lecturer.findById(lecturerId);
+  const slot = lecturer.availability.id(slotId);
+  slot.booked = true;
+  await lecturer.save();
+
+  res.redirect("/lecturer-availability");
 };
