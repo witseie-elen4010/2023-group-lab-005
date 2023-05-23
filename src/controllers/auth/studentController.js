@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const Student = require("../../models/studentModel");
+const logger = require("../../controllers/logController");
 
 // Render the sign-up form
 exports.getSignUp = (req, res) => {
@@ -28,12 +29,24 @@ exports.postSignUp = async (req, res) => {
     const student = new Student({ name, email, password });
     await student.save();
 
-    // Generate JWT token and set it as a cookie
-    const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET);
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-    });
+    // // Generate JWT token and set it as a cookie
+    // const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET);
+    // res.cookie("jwt", token, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    // });
+
+     // Generate JWT token
+     const token = jwt.sign(
+      { studentId: student._id, email: student.email },
+      process.env.JWT_SECRET
+    );
+
+    // Store the token, ID, and email in the session
+    req.session.token = token;
+    req.session.studentId = student._id;
+    req.session.email = student.email;
+    logger.logAction("Student registration", name)
 
     // Redirect to the dashboard page
     res.redirect("/dashboard");
@@ -68,13 +81,24 @@ exports.postSignIn = async (req, res) => {
       return res.status(401).redirect("/login-student");
     }
 
-    // Generate JWT token and set it as a cookie
-    const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET);
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-    });
+    // // Generate JWT token and set it as a cookie
+    // const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET);
+    // res.cookie("jwt", token, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    // });
+  // Generate JWT token
+  const token = jwt.sign(
+    { studentId: student._id, email: student.email },
+    process.env.JWT_SECRET
+  );
 
+  // Store the token, ID, and email in the session
+  req.session.token = token;
+  req.session.studentId = student._id;
+  req.session.email = student.email;
+  req.session.name = student.name;
+  logger.logAction("Student signin", student.name)
     // Redirect to the dashboard page
     res.redirect("/dashboard");
   } catch (err) {

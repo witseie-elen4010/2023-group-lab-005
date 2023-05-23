@@ -3,6 +3,7 @@ const app = express();
 const port = process.env.PORT || 5000;
 const studentAuthRoutes = require("./routes/studentRouter");
 const lecturerAuthRoutes = require("./routes/lecturerRouter");
+const studentLogRoutes = require("./routes/logRouter");
 const connectDB = require("./db");
 const flash = require("express-flash");
 const session = require("express-session");
@@ -38,6 +39,7 @@ app.get("/dashboard", function (req, res) {
 });
 app.use(studentAuthRoutes);
 app.use(lecturerAuthRoutes);
+app.use(studentLogRoutes);
 app.listen(port, () => {
   console.log(`server at http://localhost:${port}`);
 });

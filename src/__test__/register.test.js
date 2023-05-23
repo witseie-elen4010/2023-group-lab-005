@@ -196,4 +196,39 @@ describe("Lecturer login", () => {
   });
 });
 
+describe('Log Controller', () => {
+  describe('GET /logs', () => {
+    
+        it('should render logs view with logged actions when a valid session is provided', async () => {
+          // Simulate a valid session with logged actions
+          const session = { name: 'John Doe' };
+    
+          // Make a request to view logs
+          const response = await request(app)
+            .get('/logs')
+            .set('Cookie', [`session=${JSON.stringify(session)}`]);
+    
+          // Verify the response
+          expect(response.status).toBe(200);
+          expect(response.type).toBe('text/html');
+          expect(response.text).toMatchSnapshot();
+        });
+      });
 
+      it('should display a message indicating no logs are available when a valid session is provided but no logged actions exist', async () => {
+        // Simulate a valid session with no logged actions
+        const session = { name: 'John Doe' };
+      
+        // Make a request to view logs
+        const response = await request(app)
+          .get('/logs')
+          .set('Cookie', [`session=${JSON.stringify(session)}`]);
+      
+        // Verify the response
+        expect(response.status).toBe(200);
+        expect(response.type).toBe('text/html');
+        expect(response.text).toContain('No logs found.');
+      });
+      
+  
+});
