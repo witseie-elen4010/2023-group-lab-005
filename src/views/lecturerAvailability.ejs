@@ -91,3 +91,25 @@
 
 <button id="setupButton" type="submit" class="hidden" style="background-color:#ffab06; border-color: #ffab06;">Set up Consultation</button>
 </form>
+
+<script>
+  function performAction(email, day, startTime, endTime, maxStudents) {
+    document.getElementById('attendees').value = '';
+    document.getElementById('lecturerEmail').value = email;
+    document.getElementById('maxStudents').value = maxStudents;
+    document.getElementById('day').value = day;
+    document.getElementById('startTime').value = startTime;
+    document.getElementById('endTime').value = endTime;
+    // document.getElementById('consultation-form').submit();
+    const setupButton = document.getElementById("setupButton");
+    setupButton.classList.remove("hidden");
+
+    const attendees = document.getElementById("attendees");
+    attendees.classList.remove("hidden");
+
+    const attendeesList = document.getElementById("attendeesList");
+    attendeesList.classList.remove("hidden");
+  }
+</script>
+
+</main>
