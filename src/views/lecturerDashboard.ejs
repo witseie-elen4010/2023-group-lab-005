@@ -8,7 +8,6 @@
       <div class="container">
         <h5>Your upcoming consultations</h5>
         <div class="row">
-          <% upcomingConsultations.forEach((consultation) => { %>
           <div class="col-md-4 mb-4">
             <div class="card">
               <div
@@ -16,17 +15,20 @@
                 style="background-color: #031a39; color: #ffab06"
               >
                 <p class="card-title" style="font-weight: bold">
-                  <%= studentMap[consultation.studentEmail] %>
+                  <p>studentMap[consultation.studentEmail] </p>
+                  
                 </p>
               </div>
               <div class="card-body">
-                <h5 class="card-title"><%= consultation.studentName %></h5>
-                <%= consultation.day %>
+                <h5 class="card-title">
+                <p>consultation.studentName consultation.day</p>
+                <%= consultation.lecturerName %>
                 <div
                   class="card-text mt-2 mb-1"
                   style="color: #aaa; font-weight: 300; font-size: small"
                 >
-                  <%= consultation.startTime %> till <%= consultation.endTime %>
+                <p>consultation.startTime till consultation.endTime</p>
+                 
                 </div>
                 <form
                   action="/lecturer-dashboard"
@@ -43,7 +45,7 @@
               </div>
             </div>
           </div>
-          <% }); %>
+        
         </div>
       </div>
     </div>
