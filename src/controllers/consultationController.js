@@ -25,7 +25,18 @@ exports.createConsultation = async (req, res) => {
   
       let slotFound = false;
   
-      
+      lecturer.availability.forEach((availability) => {
+        if (availability.day === day) {
+          console.log("day found");
+          availability.slots.forEach((slot) => {
+            console.log(slot.startTime);
+            if (slot.startTime === startTime && slot.endTime === endTime) {
+              slot.isBook = true;
+              slotFound = true;
+            }
+          });
+        }
+      });
   
       if (!slotFound) {
         console.log("Error: Slot not found or already booked");
