@@ -5,148 +5,62 @@
 <main class="container mt-5">
   <div class="row">
     <div class="col-12 col-md-6 col-sm-12">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Your Upcoming Consultations</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="row">
-              <div class="col-md-3">
-                <img
-                  class="mb-3"
-                  src="./public/images/upcoming.png"
-                  width="50%"
-                />
-              </div>
-              <div class="col-md-3">
-                <div class="row"><p>Prof Steve</p></div>
-                <div class="row">
-                  <p style="color: #aaa; font-weight: 300; font-size: small">
-                    5 students
-                  </p>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="row"><p>5 May</p></div>
-                <div class="row">
-                  <p style="color: #aaa; font-weight: 300; font-size: small">
-                    12:00PM
-                  </p>
-                </div>
-              </div>
-              <div class="col-md-3 mt-4">
-                <button type="button" class="btn btn-warning leave-btn">
-                  <p class="btn-text">Leave</p>
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td class="row">
-              <div class="col-md-3">
-                <img
-                  class="mb-3"
-                  src="./public/images/upcoming.png"
-                  width="50%"
-                />
-              </div>
-              <div class="col-md-3">
-                <div class="row"><p>Sir Newton</p></div>
-                <div class="row">
-                  <p style="color: #aaa; font-weight: 300; font-size: small">
-                    11 students
-                  </p>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="row"><p>5 May</p></div>
-                <div class="row">
-                  <p style="color: #aaa; font-weight: 300; font-size: small">
-                    12:00PM
-                  </p>
-                </div>
-              </div>
-              <div class="col-md-3 mt-4">
-                <button type="button" class="btn btn-warning leave-btn">
-                  <p class="btn-text">Leave</p>
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td class="row">
-              <div class="col-md-3">
-                <img
-                  class="mb-3"
-                  src="./public/images/upcoming.png"
-                  width="50%"
-                />
-              </div>
-              <div class="col-md-3">
-                <div class="row"><p>Dr Xris</p></div>
-                <div class="row">
-                  <p style="color: #aaa; font-weight: 300; font-size: small">
-                    7 students
-                  </p>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="row"><p>5 May</p></div>
-                <div class="row">
-                  <p style="color: #aaa; font-weight: 300; font-size: small">
-                    12:00PM
-                  </p>
-                </div>
-              </div>
-              <div class="col-md-3 mt-4">
-                <button type="button" class="btn btn-warning leave-btn">
-                  <p class="btn-text">Leave</p>
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="container">
+        <h5>Your upcoming consultations</h5>
+        <div class="row">
+          <div class="col-md-5 mb-4">
+            upcoming
+          </div>
+         <!-- jonny's code -->
+      </div>
     </div>
-    <div class="col-12 col-md-6 col-sm-12">
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Other Upcoming Consultations</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="row">
-              <div class="col-md-3">Column 1</div>
-              <div class="col-md-3">Column 2</div>
-              <div class="col-md-3">Column 3</div>
-              <div class="col-md-3">Column 4</div>
-            </td>
-          </tr>
-          <tr>
-            <td class="row">
-              <div class="col-md-3">Column 1</div>
-              <div class="col-md-3">Column 2</div>
-              <div class="col-md-3">Column 3</div>
-              <div class="col-md-3">Column 4</div>
-            </td>
-          </tr>
-          <tr>
-            <td class="row">
-              <div class="col-md-3">Column 1</div>
-              <div class="col-md-3">Column 2</div>
-              <div class="col-md-3">Column 3</div>
-              <div class="col-md-3">Column 4</div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+
+    <div class="col-12 col-md-12 col-sm-12">
+      <div class="container">
+        <h5>Other Consultations you can join</h5>
+        <div class="row">
+          <% notAttendedConsultations.forEach((consultation) => { %>
+          <div class="col-md-12 mb-4">
+            <div class="card">
+              <div
+                class="card-header"
+                style="background-color: #031a39; color: #ffab06"
+              >
+                <p class="card-title text-center" style="font-weight: bold">
+                  Meeting With
+                </p>
+                <p
+                  class="text-center"
+                  style="color: #aaa; font-weight: 300; font-size: small"
+                >
+                  <%= notAttendedLecturerMap[consultation.lecturerEmail] %>
+                </p>
+              </div>
+              <div class="card-body">
+                <p
+                  class="card-text"
+                  style="color: #aaa; font-weight: 300; font-size: small"
+                >
+                  <%= consultation.attendees.length %> students
+                </p>
+                <%= consultation.day %>
+                <div
+                  class="card-text mt-2 mb-1"
+                  style="color: #aaa; font-weight: 300; font-size: small"
+                >
+                  <%= consultation.startTime %> till <%= consultation.endTime %>
+                </div>
+                <form action="/join-consultation/<%= consultation._id %>" method="POST">
+                  <button type="submit" class="btn btn-warning leave-btn" style="width: 100%">
+                    Join
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <% }); %>
+        </div>
+      </div>
     </div>
   </div>
 </main>
-
-<%- include('./Partials/footer');%>

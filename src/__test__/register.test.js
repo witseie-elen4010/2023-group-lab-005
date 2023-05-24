@@ -327,11 +327,11 @@ describe("Retrieve all lecturers and their availability", () => {
   });
 });
 
-const Consultation = require("../models/ConsultationModel");
+const Consultation = require("../models/consultationModel");
 const { createConsultation } = require("../controllers/consultationController");
 
 jest.mock("../models/lecturerModel");
-jest.mock("../models/ConsultationModel");
+jest.mock("../models/consultationModel");
 
 describe("createConsultation", () => {
   afterEach(() => {
@@ -541,3 +541,44 @@ describe("createConsultation", () => {
 // describe("Log Controller", () => {
 //   // Existing tests for GET /logs endpoint
 // });
+
+describe("Consultation Joining", () => {
+  let consultationId;
+
+  beforeAll(async () => {
+    // Create a dummy consultation for testing
+    const consultation = new Consultation({
+      attendees: [],
+      lecturerEmail: "lecturer@example.com",
+      maxStudents: 5,
+      day: "Monday",
+      startTime: "10:00 AM",
+      endTime: "11:00 AM",
+    });
+    await consultation.save();
+    consultationId = consultation._id;
+  });
+
+  afterAll(async () => {
+    // Clean up the dummy consultation after testing
+    await Consultation.findByIdAndRemove(consultationId);
+  });
+
+  it("should join a consultation group", async () => {
+    const validConsultationId = "646da7dd1615f8afb5f2281c"; // Replace with a valid consultation ID
+
+    const response = await request(app)
+      .post(`/join-consultation/${validConsultationId}`)
+      .set("Content-Type", "application/json")
+      .send();
+
+    expect(response.status).toBe(302); // Redirect status code
+    expect(response.header.location).toBe("/see-lecturer-availability"); // Check if redirected to student dashboard
+
+    // Retrieve the consultation after joining
+    const updatedConsultation = await Consultation.findById(
+      validConsultationId
+    );
+    // expect(updatedConsultation.attendees).not.toContain("student@example.com"); // Check if student email is in the attendees array
+  });
+});
