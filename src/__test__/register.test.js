@@ -2,6 +2,7 @@ const request = require("supertest");
 const app = require("../server");
 const Student = require("../models/studentModel");
 const Lecturer = require("../models/lecturerModel");
+const logger = require("../controllers/logController");
 require("dotenv").config();
 
 describe("Student registration", () => {
@@ -329,7 +330,7 @@ describe("Retrieve all lecturers and their availability", () => {
 const Consultation = require("../models/ConsultationModel");
 const { createConsultation } = require("../controllers/consultationController");
 
-jest.mock("../models/LecturerModel");
+jest.mock("../models/lecturerModel");
 jest.mock("../models/ConsultationModel");
 
 describe("createConsultation", () => {
@@ -479,3 +480,64 @@ describe("createConsultation", () => {
     expect(req.flash).toHaveBeenCalledWith("error", "Failed to book slot");
   });
 });
+
+// // Update the test file (register.test.js)
+
+// describe("Lecturer Controller", () => {
+//   describe("postLecturerAvailabilityForm", () => {
+//     it("should call logger.logAction with the correct parameters when a new availability slot is added", async () => {
+//       const logger = {
+//         logAction: jest.fn(),
+//       };
+
+//       const lecturerId = "123456789";
+//       const lecturer = {
+//         _id: lecturerId,
+//         name: "John Doe",
+//         availability: [],
+//       };
+
+//       // Mock the Lecturer.findById method to return the mock lecturer
+//       Lecturer.findById = jest.fn().mockResolvedValue(lecturer);
+
+//       // Mock the logger object
+//       jest.doMock("../controllers/logController", () => logger);
+      
+//       // Import the controller function after mocking the logger
+//       const { postLecturerAvailabilityForm } = require("../controllers/availabilityController");
+
+//       // Make a request to the endpoint
+//       const response = await request(app)
+//         .post("/lecturer-availability")
+//         .send({
+//           day: "Monday",
+//           start: ["10:00"],
+//           end: ["12:00"],
+//           maxStudents: ["20"],
+//         });
+
+//       // Verify that the logger.logAction method is called with the expected arguments
+//       expect(logger.logAction).toHaveBeenCalledWith(
+//         "Lecturer added an availability slot",
+//         lecturer.name
+//       );
+//     });
+
+//     it("should handle errors and render an error view when an error occurs", async () => {
+//       // Mock the Lecturer.findById method to throw an error
+//       Lecturer.findById = jest.fn().mockRejectedValue(new Error("Database error"));
+
+//       // Make a request to the endpoint
+//       const response = await request(app).post("/lecturer-availability");
+
+//       // Verify the response
+//       expect(response.status).toBe(500);
+//       expect(response.type).toBe("text/html");
+//       expect(response.text).toContain("Server error");
+//     });
+//   });
+// });
+
+// describe("Log Controller", () => {
+//   // Existing tests for GET /logs endpoint
+// });
