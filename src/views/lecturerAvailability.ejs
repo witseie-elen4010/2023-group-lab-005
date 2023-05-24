@@ -1,23 +1,19 @@
 <%- include('./Partials/inAppheader'); %>
 
-<main class="scrollable-content">
-  <% if (lecturers.length > 0) { %>
-    <% lecturers.forEach((lecturer) => { %>
-      <% if (lecturer.availability.length > 0 && lecturer.availability.some(slot => slot.slots.length > 0)) { %>
-        <h5 style="text-align: center;"><%= lecturer.name %></h5>
-
-        <div class="availability-table-container">
-          <table class="table table-bordered mx-auto" style="width: 60%;">
-            <thead style="background-color: #ffab06">
-              <tr>
-                <th>Day</th>
-                <th>Start Time</th>
-                <th>End Time</th>
-                <th>Max Students</th>
-                <th>Book</th>
-              </tr>
-            </thead>
-            <tbody>
+<main class="d-flex justify-content-center align-items-center flex-column mt-5">
+  
+  <!-- Display flash messages -->
+  <% if (messages.success) { %>
+   <div class="alert alert-success" role="alert">
+     <%= messages.success %>
+   </div>
+ <% } else if (messages.error) { %>
+   <div class="alert alert-danger" role="alert">
+     <%= messages.error %>
+   </div>
+ <% } %>
+ <div id="flash-message" class="flash-message"></div>
+   <% if (lecturers.length > 0) { %>
               <% lecturer.availability.forEach((slot) => { %>
                 <% if (slot.slots.length > 0) { %>
                   <% slot.slots.forEach((timeSlot, index) => { %>
