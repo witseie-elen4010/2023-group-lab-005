@@ -121,8 +121,8 @@ describe("Student login", () => {
     expect(response.statusCode).toBe(302); // redirect after successful logout
 
     // Check if we end up on the landing page
-    expect(response.headers.location).toBe('/');
-});
+    expect(response.headers.location).toBe("/");
+  });
 
   test("Existing student cannot log in with incorrect password", async () => {
     const loginData = {
@@ -181,8 +181,8 @@ describe("Lecturer login", () => {
     expect(response.statusCode).toBe(302); // redirect after successful logout
 
     // Check if we end up on the landing page
-    expect(response.headers.location).toBe('/');
-});
+    expect(response.headers.location).toBe("/");
+  });
 
   test("Existing lecturer cannot log in with incorrect password", async () => {
     const loginData = {
@@ -278,11 +278,10 @@ describe("Retrieve all lecturers and their availability", () => {
     await Lecturer.insertMany(lecturerData);
   });
 
-  // afterEach(async () => {
+  afterEach(async () => {
     // Clean up the database after each test
-  //   await Lecturer.deleteMany();
-  // }, 10000);  // Add timeout option here with a higher value in milliseconds
-
+    await Lecturer.deleteMany();
+  }, 10000); // Add timeout option here with a higher value in milliseconds
 
   test("Should retrieve all lecturers and their availability", async () => {
     const response = await request(app).get("/see-lecturer-availability");
@@ -290,43 +289,39 @@ describe("Retrieve all lecturers and their availability", () => {
     expect(response.statusCode).toBe(200);
     expect(response.text).toContain("Lecturer 1");
     expect(response.text).toContain("Lecturer 2");
-    // ... add more assertions to check the response body and content ...
   });
 
-describe('Log Controller', () => {
-  describe('GET /logs', () => {
-    
-        it('should render logs view with logged actions when a valid session is provided', async () => {
-          // Simulate a valid session with logged actions
-          const session = { name: 'John Doe' };
-    
-          // Make a request to view logs
-          const response = await request(app)
-            .get('/logs')
-            .set('Cookie', [`session=${JSON.stringify(session)}`]);
-    
-          // Verify the response
-          expect(response.status).toBe(200);
-          expect(response.type).toBe('text/html');
-          expect(response.text).toMatchSnapshot();
-        });
-      });
+  describe("Log Controller", () => {
+    describe("GET /logs", () => {
+      it("should render logs view with logged actions when a valid session is provided", async () => {
+        // Simulate a valid session with logged actions
+        const session = { name: "John Doe" };
 
-      it('should display a message indicating no logs are available when a valid session is provided but no logged actions exist', async () => {
-        // Simulate a valid session with no logged actions
-        const session = { name: 'John Doe' };
-      
         // Make a request to view logs
         const response = await request(app)
-          .get('/logs')
-          .set('Cookie', [`session=${JSON.stringify(session)}`]);
-      
+          .get("/logs")
+          .set("Cookie", [`session=${JSON.stringify(session)}`]);
+
         // Verify the response
         expect(response.status).toBe(200);
-        expect(response.type).toBe('text/html');
-        expect(response.text).toContain('No logs found.');
+        expect(response.type).toBe("text/html");
+        expect(response.text).toMatchSnapshot();
       });
-      
-  
 
+      it("should display a message indicating no logs are available when a valid session is provided but no logged actions exist", async () => {
+        // Simulate a valid session with no logged actions
+        const session = { name: "John Doe" };
+
+        // Make a request to view logs
+        const response = await request(app)
+          .get("/logs")
+          .set("Cookie", [`session=${JSON.stringify(session)}`]);
+
+        // Verify the response
+        expect(response.status).toBe(200);
+        expect(response.type).toBe("text/html");
+        expect(response.text).toContain("No logs found.");
+      });
+    });
+  });
 });
