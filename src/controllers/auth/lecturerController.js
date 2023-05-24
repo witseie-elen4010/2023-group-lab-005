@@ -83,7 +83,7 @@ exports.postSignIn = async (req, res) => {
     req.session.email = lecturer.email;
 
     // Redirect to the dashboard page
-    res.redirect("/set-lecturer-availability");
+    res.redirect("/lecturer-dashboard");
   } catch (err) {
     console.error(err);
     res.status(500).render("error", { errorMessage: "Server error" });

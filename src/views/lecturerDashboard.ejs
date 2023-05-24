@@ -1,4 +1,4 @@
-<%- include('./Partials/inAppheader');%>
+<%- include('./Partials/inAppheaderLec');%>
 <head>
   <link rel="stylesheet" href="./public/styles/lecturerDashboard.css" />
 </head>
@@ -29,7 +29,7 @@
                   <%= consultation.startTime %> till <%= consultation.endTime %>
                 </div>
                 <form
-                  action="/cancel-consultation/<%= consultation._id %>"
+                  action="/lecturer-dashboard"
                   method="POST"
                 >
                   <button
