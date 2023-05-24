@@ -36,6 +36,12 @@ const lecturerSchema = new mongoose.Schema({
               type: Number,
               required: true,
             },
+
+            isBook: {
+              type: Boolean,
+              required: true,
+              default: false,
+            },
           },
         ],
         default: [],
