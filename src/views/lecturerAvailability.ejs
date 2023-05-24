@@ -14,34 +14,40 @@
  <% } %>
  <div id="flash-message" class="flash-message"></div>
    <% if (lecturers.length > 0) { %>
+    <% lecturers.forEach((lecturer) => { %>
+      <% if (lecturer.availability.length > 0 && lecturer.availability.some(slot => slot.slots.length > 0)) { %>
+
+          <h5 style="text-align: center;"><%= lecturer.name %></h5>
+
+       
+
+          <table class="table table-bordered" style="width: 60%; margin-bottom: 4rem;">
+            <thead style="background-color: #ffab06">
+              <tr>
+                <th>Day</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Max Students</th>
+                <th>Book</th>
+              </tr>
+            </thead>
+            <tbody>
               <% lecturer.availability.forEach((slot) => { %>
                 <% if (slot.slots.length > 0) { %>
-                  <% slot.slots.forEach((timeSlot, index) => { %>
-                    <tr>
-                      <% if (index === 0) { %>
-                        <td rowspan="<%= slot.slots.length %>"><%= slot.day %></td>
+                  <tr>
+                    <td rowspan="<%= slot.slots.length %>"><%= slot.day %></td>
+                    <% slot.slots.forEach((timeSlot, index) => { %>
+                      <% if (index > 0) { %>
+                        <tr>
                       <% } %>
                       <td><%= timeSlot.startTime %></td>
                       <td><%= timeSlot.endTime %></td>
                       <td><%= timeSlot.maxStudents %></td>
                       <td>
-                        <a href="#" onclick="performAction('<%= lecturer._id %>')">
-                          <i class="far fa-edit" style="color: black; margin-left: 1rem;"></i>
-                        </a>
-                      </td>
-                    </tr>
-                  <% }); %>
-                <% } %>
-              <% }); %>
-            </tbody>
-          </table>
-        </div>
-      <% } %>
-    <% }); %>
-  <% } else { %>
-    <p>No lecturers found</p>
-  <% } %>
-</main>
+                        <% if (timeSlot.isBook) { %>
+                          Booked
+                        <% } else { %>
+                          <a href="#" onclick="performAction('<%= lecturer.email %>', '<%= slot.day %>', '<%= timeSlot.startTime %>', '<%= timeSlot.endTime %>', '<%= timeSlot.maxStudents %>')">
 
 <%- include('./Partials/footer'); %>
 
