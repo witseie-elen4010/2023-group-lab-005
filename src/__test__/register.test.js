@@ -8,7 +8,7 @@ describe("Student registration", () => {
   afterEach(async () => {
     // Clean up the database after each test
     await Student.deleteMany();
-  }, 10000); // Add timeout option here with a higher value in milliseconds
+  }, 10000);
 
   test("New student can see sign-up form with name, email, and password fields", async () => {
     const response = await request(app).get("/register-student");
@@ -283,6 +283,7 @@ describe("Retrieve all lecturers and their availability", () => {
   //   await Lecturer.deleteMany();
   // }, 10000);  // Add timeout option here with a higher value in milliseconds
 
+
   test("Should retrieve all lecturers and their availability", async () => {
     const response = await request(app).get("/see-lecturer-availability");
 
@@ -291,4 +292,41 @@ describe("Retrieve all lecturers and their availability", () => {
     expect(response.text).toContain("Lecturer 2");
     // ... add more assertions to check the response body and content ...
   });
+
+describe('Log Controller', () => {
+  describe('GET /logs', () => {
+    
+        it('should render logs view with logged actions when a valid session is provided', async () => {
+          // Simulate a valid session with logged actions
+          const session = { name: 'John Doe' };
+    
+          // Make a request to view logs
+          const response = await request(app)
+            .get('/logs')
+            .set('Cookie', [`session=${JSON.stringify(session)}`]);
+    
+          // Verify the response
+          expect(response.status).toBe(200);
+          expect(response.type).toBe('text/html');
+          expect(response.text).toMatchSnapshot();
+        });
+      });
+
+      it('should display a message indicating no logs are available when a valid session is provided but no logged actions exist', async () => {
+        // Simulate a valid session with no logged actions
+        const session = { name: 'John Doe' };
+      
+        // Make a request to view logs
+        const response = await request(app)
+          .get('/logs')
+          .set('Cookie', [`session=${JSON.stringify(session)}`]);
+      
+        // Verify the response
+        expect(response.status).toBe(200);
+        expect(response.type).toBe('text/html');
+        expect(response.text).toContain('No logs found.');
+      });
+      
+  
+
 });

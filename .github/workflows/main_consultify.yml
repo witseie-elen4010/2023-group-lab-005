@@ -30,7 +30,8 @@ jobs:
           npm install jest --save-dev
           npm install supertest
           npm run build --if-present
-          cd src && npm run test
+          cd src && npm run test -- -u
+        
           
 
       - name: Upload artifact for deployment job
