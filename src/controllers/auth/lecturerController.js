@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const Lecturer = require("../../models/lecturerModel");
+const logger = require("../../controllers/logController");
 
 // Render the sign-up form
 exports.getSignUp = (req, res) => {
@@ -38,8 +39,9 @@ exports.postSignUp = async (req, res) => {
       secure: process.env.NODE_ENV === "production",
     });
 
+    logger.logAction("Lecturer registration", lecturer.name)
     // Redirect to the dashboard page
-    res.redirect("/");
+    res.redirect("/set-lecturer-availability");
   } catch (err) {
     console.error(err);
     res.status(500).render("error", { errorMessage: "Server error" });
@@ -81,7 +83,8 @@ exports.postSignIn = async (req, res) => {
     req.session.token = token;
     req.session.lecturerId = lecturer._id;
     req.session.email = lecturer.email;
-
+    req.session.name = lecturer.name;
+    logger.logAction("Lecturer sign-in", lecturer.name)
     // Redirect to the dashboard page
     res.redirect("/lecturer-dashboard");
   } catch (err) {
