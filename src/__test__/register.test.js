@@ -195,6 +195,103 @@ describe("Lecturer login", () => {
     expect(response.statusCode).toBe(302); // unauthorized status code
   });
 });
+describe("Retrieve all lecturers and their availability", () => {
+  beforeEach(async () => {
+    // Create fake lecturers with availability for testing
+    const lecturerData = [
+      {
+        name: "Lecturer 1",
+        email: "lecturer1@example.com",
+        password: "password1",
+        availability: [
+          {
+            day: "Monday",
+            slots: [
+              {
+                startTime: "09:00 AM",
+                endTime: "11:00 AM",
+                maxStudents: 5,
+              },
+              {
+                startTime: "02:00 PM",
+                endTime: "04:00 PM",
+                maxStudents: 8,
+              },
+            ],
+          },
+          {
+            day: "Tuesday",
+            slots: [
+              {
+                startTime: "10:00 AM",
+                endTime: "12:00 PM",
+                maxStudents: 6,
+              },
+              {
+                startTime: "03:00 PM",
+                endTime: "05:00 PM",
+                maxStudents: 10,
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: "Lecturer 2",
+        email: "lecturer2@example.com",
+        password: "password2",
+        availability: [
+          {
+            day: "Wednesday",
+            slots: [
+              {
+                startTime: "09:00 AM",
+                endTime: "11:00 AM",
+                maxStudents: 5,
+              },
+              {
+                startTime: "02:00 PM",
+                endTime: "04:00 PM",
+                maxStudents: 8,
+              },
+            ],
+          },
+          {
+            day: "Thursday",
+            slots: [
+              {
+                startTime: "10:00 AM",
+                endTime: "12:00 PM",
+                maxStudents: 6,
+              },
+              {
+                startTime: "03:00 PM",
+                endTime: "05:00 PM",
+                maxStudents: 10,
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    await Lecturer.insertMany(lecturerData);
+  });
+
+  // afterEach(async () => {
+    // Clean up the database after each test
+  //   await Lecturer.deleteMany();
+  // }, 10000);  // Add timeout option here with a higher value in milliseconds
+
+
+  test("Should retrieve all lecturers and their availability", async () => {
+    const response = await request(app).get("/see-lecturer-availability");
+
+    expect(response.statusCode).toBe(200);
+    expect(response.text).toContain("Lecturer 1");
+    expect(response.text).toContain("Lecturer 2");
+    // ... add more assertions to check the response body and content ...
+  });
 
 describe('Log Controller', () => {
   describe('GET /logs', () => {
@@ -231,4 +328,5 @@ describe('Log Controller', () => {
       });
       
   
+
 });

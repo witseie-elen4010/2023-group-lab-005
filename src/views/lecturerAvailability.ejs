@@ -1,0 +1,60 @@
+<%- include('./Partials/inAppheader'); %>
+
+<main class="scrollable-content">
+  <% if (lecturers.length > 0) { %>
+    <% lecturers.forEach((lecturer) => { %>
+      <% if (lecturer.availability.length > 0 && lecturer.availability.some(slot => slot.slots.length > 0)) { %>
+        <h5 style="text-align: center;"><%= lecturer.name %></h5>
+
+        <div class="availability-table-container">
+          <table class="table table-bordered mx-auto" style="width: 60%;">
+            <thead style="background-color: #ffab06">
+              <tr>
+                <th>Day</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Max Students</th>
+                <th>Book</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% lecturer.availability.forEach((slot) => { %>
+                <% if (slot.slots.length > 0) { %>
+                  <% slot.slots.forEach((timeSlot, index) => { %>
+                    <tr>
+                      <% if (index === 0) { %>
+                        <td rowspan="<%= slot.slots.length %>"><%= slot.day %></td>
+                      <% } %>
+                      <td><%= timeSlot.startTime %></td>
+                      <td><%= timeSlot.endTime %></td>
+                      <td><%= timeSlot.maxStudents %></td>
+                      <td>
+                        <a href="#" onclick="performAction('<%= lecturer._id %>')">
+                          <i class="far fa-edit" style="color: black; margin-left: 1rem;"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  <% }); %>
+                <% } %>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    <% }); %>
+  <% } else { %>
+    <p>No lecturers found</p>
+  <% } %>
+</main>
+
+<%- include('./Partials/footer'); %>
+
+<style>
+  .scrollable-content {
+  height: calc(100vh - (80px + 85px)); /* Adjust the values (e.g., 80px and 60px) to match your header and footer heights */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+}
+
+</style>
