@@ -92,7 +92,24 @@ exports.getAllConsultations = async (req, res) => {
       lecturerMap[lecturer.email] = lecturer.name;
     });
 
+    // Filter consultations where the student is an attendee
+    const attendedConsultations = consultations.filter((consultation) => {
+      return consultation.attendees.includes(studentEmail);
+    });
 
+    // Fetch lecturer names for attended consultations
+    const attendedLecturerEmails = attendedConsultations.map(
+      (consultation) => consultation.lecturerEmail
+    );
+    const attendedLecturers = await Lecturer.find({
+      email: { $in: attendedLecturerEmails },
+    });
+
+    // Create a map of lecturer emails to names for attended consultations
+    const attendedLecturerMap = {};
+    attendedLecturers.forEach((lecturer) => {
+      attendedLecturerMap[lecturer.email] = lecturer.name;
+    });
 
     // Filter consultations where the student is not an attendee and attendees are less than maxStudents
     const notAttendedConsultations = consultations.filter((consultation) => {
@@ -117,9 +134,10 @@ exports.getAllConsultations = async (req, res) => {
     });
 
     res.render("studentDashboard", {
-
+      attendedConsultations,
       notAttendedConsultations,
       lecturerMap,
+      attendedLecturerMap,
       notAttendedLecturerMap,
     });
   } catch (error) {
@@ -128,21 +146,19 @@ exports.getAllConsultations = async (req, res) => {
   }
 };
 
-//Get other consultations
-
-// Get a single consultation by ID
-exports.getConsultationById = async (req, res) => {
-  const { id } = req.params;
-
+// Controller for consultation cancellation
+exports.cancelConsultation = async (req, res) => {
   try {
-    const consultation = await Consultation.findById(id);
-    if (!consultation) {
-      return res.status(404).json({ error: "Consultation not found" });
-    }
-    res.json(consultation);
+    const { id } = req.params;
+
+    // Find the consultation by ID and remove it
+    await Consultation.findByIdAndRemove(id);
+
+    // Redirect to the student dashboard or any other desired page
+    res.redirect("/student-dashboard");
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to fetch consultation" });
+    res.status(500).json({ error: "Failed to cancel the consultation" });
   }
 };
 
@@ -188,5 +204,5 @@ exports.joinConsultation = async (req, res) => {
     console.log("Error: Failed to join consultation", err);
     req.flash("error", "Failed to join consultation");
     res.redirect("/see-lecturer-availability");
-  }
+  }
 };

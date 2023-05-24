@@ -2,7 +2,6 @@ const request = require("supertest");
 const app = require("../server");
 const Student = require("../models/studentModel");
 const Lecturer = require("../models/lecturerModel");
-const logger = require("../controllers/logController");
 require("dotenv").config();
 
 describe("Student registration", () => {
@@ -481,67 +480,6 @@ describe("createConsultation", () => {
   });
 });
 
-// // Update the test file (register.test.js)
-
-// describe("Lecturer Controller", () => {
-//   describe("postLecturerAvailabilityForm", () => {
-//     it("should call logger.logAction with the correct parameters when a new availability slot is added", async () => {
-//       const logger = {
-//         logAction: jest.fn(),
-//       };
-
-//       const lecturerId = "123456789";
-//       const lecturer = {
-//         _id: lecturerId,
-//         name: "John Doe",
-//         availability: [],
-//       };
-
-//       // Mock the Lecturer.findById method to return the mock lecturer
-//       Lecturer.findById = jest.fn().mockResolvedValue(lecturer);
-
-//       // Mock the logger object
-//       jest.doMock("../controllers/logController", () => logger);
-      
-//       // Import the controller function after mocking the logger
-//       const { postLecturerAvailabilityForm } = require("../controllers/availabilityController");
-
-//       // Make a request to the endpoint
-//       const response = await request(app)
-//         .post("/lecturer-availability")
-//         .send({
-//           day: "Monday",
-//           start: ["10:00"],
-//           end: ["12:00"],
-//           maxStudents: ["20"],
-//         });
-
-//       // Verify that the logger.logAction method is called with the expected arguments
-//       expect(logger.logAction).toHaveBeenCalledWith(
-//         "Lecturer added an availability slot",
-//         lecturer.name
-//       );
-//     });
-
-//     it("should handle errors and render an error view when an error occurs", async () => {
-//       // Mock the Lecturer.findById method to throw an error
-//       Lecturer.findById = jest.fn().mockRejectedValue(new Error("Database error"));
-
-//       // Make a request to the endpoint
-//       const response = await request(app).post("/lecturer-availability");
-
-//       // Verify the response
-//       expect(response.status).toBe(500);
-//       expect(response.type).toBe("text/html");
-//       expect(response.text).toContain("Server error");
-//     });
-//   });
-// });
-
-// describe("Log Controller", () => {
-//   // Existing tests for GET /logs endpoint
-// });
-
 describe("Consultation Joining", () => {
   let consultationId;
 
@@ -581,4 +519,48 @@ describe("Consultation Joining", () => {
     );
     // expect(updatedConsultation.attendees).not.toContain("student@example.com"); // Check if student email is in the attendees array
   });
+});
+const { cancelConsultation } = require("../controllers/consultationController");
+
+describe("cancelConsultation", () => {
+  it("should cancel the consultation and redirect to the student dashboard", async () => {
+    const req = {
+      params: { id: "consultationId" },
+    };
+    const res = {
+      redirect: jest.fn(),
+    };
+
+    await Consultation.findByIdAndRemove.mockReturnValueOnce({});
+
+    await cancelConsultation(req, res);
+
+    expect(Consultation.findByIdAndRemove).toHaveBeenCalledWith(
+      "consultationId"
+    );
+    expect(res.redirect).toHaveBeenCalledWith("/student-dashboard");
+  });
+
+  it("should handle errors and send a 500 response with an error message", async () => {
+    const req = {
+      params: { id: "consultationId" },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    const error = new Error("Failed to cancel the consultation");
+    await Consultation.findByIdAndRemove.mockRejectedValueOnce(error);
+
+    await cancelConsultation(req, res);
+
+    expect(Consultation.findByIdAndRemove).toHaveBeenCalledWith(
+      "consultationId"
+    );
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      error: "Failed to cancel the consultation",
+    });
+  });
 });
