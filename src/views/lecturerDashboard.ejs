@@ -1,16 +1,53 @@
-<%- include('./Partials/header');%>
-
-<body>
-    <h1>
-        <p>
-            Hello, <%= userInfo.name %>
-        </p>
-        <p>
-            Welcome to your dashboard!  
-            You are a lecturer
-        </p>
-        
-    </h1>
-</body>
+<%- include('./Partials/inAppheader');%>
+<head>
+  <link rel="stylesheet" href="./public/styles/lecturerDashboard.css" />
+</head>
+<main class="container mt-5">
+  <div class="row">
+    <div class="col-12 col-md-12 col-sm-12">
+      <div class="container">
+        <h5>Your upcoming consultations</h5>
+        <div class="row">
+          <% upcomingConsultations.forEach((consultation) => { %>
+          <div class="col-md-4 mb-4">
+            <div class="card">
+              <div
+                class="card-header"
+                style="background-color: #031a39; color: #ffab06"
+              >
+                <p class="card-title" style="font-weight: bold">
+                  <%= studentMap[consultation.studentEmail] %>
+                </p>
+              </div>
+              <div class="card-body">
+                <h5 class="card-title"><%= consultation.studentName %></h5>
+                <%= consultation.day %>
+                <div
+                  class="card-text mt-2 mb-1"
+                  style="color: #aaa; font-weight: 300; font-size: small"
+                >
+                  <%= consultation.startTime %> till <%= consultation.endTime %>
+                </div>
+                <form
+                  action="/cancel-consultation/<%= consultation._id %>"
+                  method="POST"
+                >
+                  <button
+                    type="submit"
+                    class="btn btn-warning leave-btn"
+                    style="width: 100%"
+                  >
+                    Cancel
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <% }); %>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
 
 <%- include('./Partials/footer');%>
