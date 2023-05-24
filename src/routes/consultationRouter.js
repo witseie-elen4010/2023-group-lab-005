@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 // Import the consultation controller
-const consultationController = require("../controllers/consultationController");
+const consultationController = require("../controllers/consultationController.js");
 
 // Route for rendering the consultation setup view
 router.get("/consultation", consultationController.renderConsultationSetup);
