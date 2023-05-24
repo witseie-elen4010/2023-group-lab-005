@@ -1,4 +1,5 @@
 const Lecturer = require("../models/lecturerModel");
+const logger = require("../controllers/logController");
 
 // Render the lecturer availability form
 exports.getLecturerAvailabilityForm = (req, res) => {
@@ -37,7 +38,7 @@ exports.postLecturerAvailabilityForm = async (req, res) => {
 
     // Save the changes to the database
     await lecturer.save();
-
+    logger.logAction("Lecturer added an availability slot", lecturer.name)
     // Redirect back to the dashboard
     res.redirect("/set-lecturer-availability");
     // }
