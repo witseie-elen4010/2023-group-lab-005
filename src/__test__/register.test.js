@@ -326,7 +326,7 @@ describe("Retrieve all lecturers and their availability", () => {
   });
 });
 
-const Consultation = require("../models/ConsultationModel");
+const Consultation = require("../models/consultationModel");
 const { createConsultation } = require("../controllers/consultationController");
 
 jest.mock("../models/LecturerModel");
