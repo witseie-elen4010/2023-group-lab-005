@@ -2,6 +2,9 @@ const request = require("supertest");
 const app = require("../server");
 const Student = require("../models/studentModel");
 const Lecturer = require("../models/lecturerModel");
+const Consultation = require('../models/consultationModel');
+const consultationController = require('../controllers/consultationController');
+
 require("dotenv").config();
 
 describe("Student registration", () => {
