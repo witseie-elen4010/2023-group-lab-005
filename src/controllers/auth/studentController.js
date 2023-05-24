@@ -49,7 +49,7 @@ exports.postSignUp = async (req, res) => {
     logger.logAction("Student registration", name)
 
     // Redirect to the dashboard page
-    res.redirect("/dashboard");
+    res.redirect("/student-dashboard");
   } catch (err) {
     console.error(err);
     res.status(500).render("error", { errorMessage: "Server error" });
@@ -100,7 +100,7 @@ exports.postSignIn = async (req, res) => {
   req.session.name = student.name;
   logger.logAction("Student signin", student.name)
     // Redirect to the dashboard page
-    res.redirect("/dashboard");
+    res.redirect("/student-dashboard");
   } catch (err) {
     console.error(err);
     res.status(500).render("error", { errorMessage: "Server error" });
@@ -114,5 +114,5 @@ exports.bookConsultation = async (req, res) => {
   student.bookedConsultations.push({ lecturerId, slotId });
   await student.save();
 
-  res.redirect("/dashboard");
+  res.redirect("/student-dashboard");
 };
