@@ -16,7 +16,10 @@ router.post("/join-consultation/:id", consultationController.joinConsultation);
 // Route for rendering the student dashboard and fetching all consultations
 router.get("/student-dashboard", consultationController.getAllConsultations);
 
-router.get("/lecturer-dashboard",  consultationController.getAllConsultations);
-  
+// Route for consultation cancellation
+router.post(
+  "/cancel-consultation/:id",
+  consultationController.cancelConsultation
+);
 
-module.exports = router;
+module.exports = router;
