@@ -35,12 +35,7 @@ app.get("/", function (req, res) {
   res.render("LandingPage");
 });
 
-app.get("/student-dashboard", function (req, res) {
-  res.render("studentDashboard");
-});
-app.get("/lecturer-dashboard", function (req, res) {
-  res.render("lecturerDashboard");
-});
+
 app.use(studentAuthRoutes);
 app.use(lecturerAuthRoutes);
 app.use(studentLogRoutes);

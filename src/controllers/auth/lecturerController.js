@@ -39,6 +39,13 @@ exports.postSignUp = async (req, res) => {
       secure: process.env.NODE_ENV === "production",
     });
 
+   
+    // Store the token, ID, and email in the session
+    req.session.token = token;
+    req.session.lecturerId = lecturer._id;
+    req.session.email = lecturer.email;
+    req.session.name = lecturer.name;
+
     logger.logAction("Lecturer registration", lecturer.name)
     // Redirect to the dashboard page
     res.redirect("/set-lecturer-availability");
