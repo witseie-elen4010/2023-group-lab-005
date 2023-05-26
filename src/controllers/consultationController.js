@@ -206,3 +206,36 @@ exports.joinConsultation = async (req, res) => {
     res.redirect("/see-lecturer-availability");
   }
 };
+
+exports.getUpcomingConsultations = async (req, res) => {
+  try {
+    // Get the lecturer's email from the session
+    const lecturerEmail = req.session.email;
+
+    // Find all consultations where the lecturer's email matches
+    const upcomingConsultations = await Consultation.find({
+      lecturerEmail,
+    }).sort({ startTime: 1 }); // Sort consultations by ascending start time
+
+    // Get the names of the attendees for each consultation
+    const consultationsWithAttendeeNames = await Promise.all(
+      upcomingConsultations.map(async (consultation) => {
+        const attendees = consultation.attendees;
+        const attendeeNames = await Student.find(
+          { email: { $in: attendees } },
+          "name"
+        ).lean();
+        const names = attendeeNames.map((attendee) => attendee.name);
+        return { ...consultation.toObject(), attendeeNames: names };
+      })
+    );
+
+    res.render("lecturerDashboard", {
+      upcomingConsultations: consultationsWithAttendeeNames,
+      title: "All Consultations",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch consultations" });
+  }
+};
