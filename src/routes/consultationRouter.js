@@ -22,4 +22,6 @@ router.post(
   consultationController.cancelConsultation
 );
 
+router.get("/lecturer-dashboard", consultationController.getUpcomingConsultations)
+
 module.exports = router;
