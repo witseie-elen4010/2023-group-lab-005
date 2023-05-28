@@ -26,4 +26,6 @@ router.post(
 // Route to handle the POST request for updating the consultation
 router.post("/edit-consultation/:id", consultationController.editConsultation);
 
+router.get("/lecturer-dashboard", consultationController.getUpcomingConsultations)
+
 module.exports = router;

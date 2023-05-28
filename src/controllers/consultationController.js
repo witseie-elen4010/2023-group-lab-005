@@ -1,5 +1,6 @@
 const Consultation = require("../models/consultationModel");
 const Lecturer = require("../models/lecturerModel");
+const Student = require("../models/studentModel");
 // Controller method for rendering the consultation setup view
 exports.renderConsultationSetup = (req, res) => {
   // Render the consultation setup view
@@ -204,7 +205,67 @@ exports.joinConsultation = async (req, res) => {
     console.log("Error: Failed to join consultation", err);
     req.flash("error", "Failed to join consultation");
     res.redirect("/see-lecturer-availability");
-  }
+  }
+};
+
+exports.getUpcomingConsultations = async (req, res) => {
+  try {
+    // Get the lecturer's email from the session
+    const lecturerEmail = req.session.email;
+
+    // Find all consultations where the lecturer's email matches
+    const upcomingConsultations = await Consultation.find({
+      lecturerEmail,
+    }).sort({ startTime: 1 }); // Sort consultations by ascending start time
+
+    // Get the names of the attendees for each consultation
+    const consultationsWithAttendeeNames = await Promise.all(
+      upcomingConsultations.map(async (consultation) => {
+        const attendees = consultation.attendees;
+        const attendeeNames = await Student.find(
+          { email: { $in: attendees } },
+          "name"
+        ).lean();
+        const names = attendeeNames.map((attendee) => attendee.name);
+        return { ...consultation.toObject(), attendeeNames: names };
+      })
+    );
+
+    res.render("lecturerDashboard", {
+      upcomingConsultations: consultationsWithAttendeeNames,
+      title: "All Consultations",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch consultations" });
+  }
+};
+
+exports.editConsultation = async (req, res) => {
+  try {
+    const { consultationId } = req.params;
+    const { day, startTime, endTime } = req.body;
+
+    // Find the consultation by ID
+    const consultation = await Consultation.findById(consultationId);
+
+    if (!consultation) {
+      return res.status(404).json({ error: "Consultation not found" });
+    }
+
+    // Update consultation details
+    consultation.day = day;
+    consultation.startTime = startTime;
+    consultation.endTime = endTime;
+
+    // Save the updated consultation
+    await consultation.save();
+
+    res.status(200).json({ message: "Consultation updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update consultation" });
+  }
 };
 
 // Controller method for updating consultation information
