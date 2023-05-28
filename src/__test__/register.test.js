@@ -2,13 +2,14 @@ const request = require("supertest");
 const app = require("../server");
 const Student = require("../models/studentModel");
 const Lecturer = require("../models/lecturerModel");
+const Consultation = require("../models/consultationModel");
 require("dotenv").config();
 
 describe("Student registration", () => {
   afterEach(async () => {
     // Clean up the database after each test
     await Student.deleteMany();
-  }, 10000);
+  }, 100000);
 
   test("New student can see sign-up form with name, email, and password fields", async () => {
     const response = await request(app).get("/register-student");
@@ -326,7 +327,6 @@ describe("Retrieve all lecturers and their availability", () => {
   });
 });
 
-const Consultation = require("../models/consultationModel");
 const { createConsultation } = require("../controllers/consultationController");
 
 jest.mock("../models/lecturerModel");
@@ -561,6 +561,42 @@ describe("cancelConsultation", () => {
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
       error: "Failed to cancel the consultation",
-    });
-  });
+    });
+  });
+});
+test("A new lecturer can create a consultation", async () => {
+  // Create a new lecturer
+  const lecturerData = {
+    name: "Jane Smith",
+    email: "janesmith@example.com",
+    password: "password",
+  };
+  const lecturer = new Lecturer(lecturerData);
+  await lecturer.save();
+
+  // Create a consultation data
+  const consultationData = {
+    attendees: [],
+    lecturerEmail: lecturer.email,
+    maxStudents: 5,
+    day: "Monday",
+    startTime: "10:00 AM",
+    endTime: "11:00 AM",
+  };
+
+  // Send a POST request to create a consultation
+  const response = await request(app)
+    .post("/consultation")
+    .send(consultationData);
+
+  // Check the response status code and location
+  expect(response.statusCode).toBe(302); // Redirect status code
+  expect(response.header.location).toBe("/see-lecturer-availability"); // Check the redirect location
+
+  // Check if the consultation was saved to the database
+  const savedConsultation = await Consultation.findOne({
+    lecturerEmail: lecturer.email,
+    day: consultationData.day,
+  });
+  expect(savedConsultation).not.toBeNull();
 });
