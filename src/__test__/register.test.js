@@ -3,6 +3,7 @@ const app = require("../server");
 const Student = require("../models/studentModel");
 const Lecturer = require("../models/lecturerModel");
 const Consultation = require("../models/consultationModel");
+const bcrypt = require('bcryptjs');
 require("dotenv").config();
 
 describe("Student registration", () => {
@@ -599,4 +600,30 @@ test("A new lecturer can create a consultation", async () => {
     day: consultationData.day,
   });
   expect(savedConsultation).not.toBeNull();
+});
+
+describe('Password Hashing', () => {
+  test('Should create a new user with hashed password', async () => {
+    const userData = {
+      name: 'John Doe',
+      email: 'johndoe@example.com',
+      password: 'password',
+      confirmPassword: 'password',
+    };
+
+    const response = await request(app)
+      .post('/register-student')
+      .send(userData);
+
+    // Assert that the student was created successfully
+    expect(response.statusCode).toBe(302);
+
+    // Get the created student from the database
+    const createdUser = await Student.findOne({ email: userData.email });
+
+    // Assert that the password is hashed
+    expect(createdUser).toBeDefined();
+    expect(bcrypt.compareSync(userData.password, createdUser.password)).toBe(true);
+  });
+
 });
