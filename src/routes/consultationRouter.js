@@ -22,10 +22,8 @@ router.post(
   consultationController.cancelConsultation
 );
 
-// Route to render the consultation update form
-router.get("/:id/update", consultationController.renderConsultationUpdateForm);
 
 // Route to handle the POST request for updating the consultation
-router.post("/update", consultationController.updateConsultation);
+router.post("/edit-consultation/:id", consultationController.editConsultation);
 
 module.exports = router;
