@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const Lecturer = require("../../models/lecturerModel");
 const logger = require("../../controllers/logController");
+const bcrypt = require('bcryptjs')
 
 // Render the sign-up form
 exports.getSignUp = (req, res) => {
@@ -26,7 +27,7 @@ exports.postSignUp = async (req, res) => {
     }
 
     // Create a new lecturer with the provided details
-    const lecturer = new Lecturer({ name, email, password });
+    const lecturer = new Lecturer({ name, email, password: bcrypt.hashSync(password) });
     await lecturer.save();
 
     // Generate JWT token and set it as a cookie
