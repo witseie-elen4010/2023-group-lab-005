@@ -205,7 +205,7 @@ exports.joinConsultation = async (req, res) => {
     console.log("Error: Failed to join consultation", err);
     req.flash("error", "Failed to join consultation");
     res.redirect("/see-lecturer-availability");
-  }
+  }
 };
 
 exports.getUpcomingConsultations = async (req, res) => {
@@ -238,5 +238,32 @@ exports.getUpcomingConsultations = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch consultations" });
+  }
+};
+
+exports.editConsultation = async (req, res) => {
+  try {
+    const { consultationId } = req.params;
+    const { day, startTime, endTime } = req.body;
+
+    // Find the consultation by ID
+    const consultation = await Consultation.findById(consultationId);
+
+    if (!consultation) {
+      return res.status(404).json({ error: "Consultation not found" });
+    }
+
+    // Update consultation details
+    consultation.day = day;
+    consultation.startTime = startTime;
+    consultation.endTime = endTime;
+
+    // Save the updated consultation
+    await consultation.save();
+
+    res.status(200).json({ message: "Consultation updated successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update consultation" });
   }
 };
