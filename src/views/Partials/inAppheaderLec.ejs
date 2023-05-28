@@ -58,7 +58,6 @@
               <i class="fa-regular fa-calendar-plus"></i><span> Add slot</span>
             </button>
           </li>
-
           <li class="nav-item dropdown">
             <a
               class="nav-link dropdown-toggle mr-5"
@@ -73,9 +72,15 @@
               <i class="fa-regular fa-circle-user fa-lg"></i>
             </a>
             <div class="dropdown-menu" aria-labelledby="userDropdown">
+              <a class="dropdown-item" href="/lecturer-dashboard">
+                <i class="fa-solid fa-gauge"></i> <span> Dashboard</span></a
+              >
+              <a class="dropdown-item" href="/logs">
+                <i class="fa-solid fa-list"></i> <span> View logs</span></a
+              >
               <a
-                href="/lecturer-dashboard"
-                class="btn btn-primary dropdown-item"
+                href="/sign-out"
+                class="dropdown-item btn btn-primary"
                 style="
                   background-color: #fff;
                   border-color: #fff;
@@ -83,15 +88,8 @@
                 "
               >
                 <i class="fa-solid fa-right-from-bracket"></i
-                ><span>Dashboard</span>
+                ><span> Sign out</span>
               </a>
-              <a class="dropdown-item" href="/logs">
-                <i class="fa-solid fa-list"></i> <span> View logs</span></a
-              >
-              <a class="dropdown-item" href="/sign-out">
-                <i class="fa-solid fa-list"></i> <span>Sign Out</span></a
-              >
-            
             </div>
           </li>
         </ul>

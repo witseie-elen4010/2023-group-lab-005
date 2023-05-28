@@ -19,118 +19,112 @@
         <% consultation.attendeeNames.forEach((name) => { %>
         <p class="card-text">Attendee Name: <%= name %></p>
         <% }); %>
-        <form
-          action=""
-          method="POST"
-        >
-          <button type="submit" class="btn btn-danger">
-            Cancel Consultation
+        <div>
+          <form
+            action="/cancel-consultation/<%= consultation._id %>"
+            method="POST"
+          >
+            <button type="submit" class="btn btn-danger">
+              Cancel Consultation
+            </button>
+          </form>
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-toggle="modal"
+            data-target="#editModal<%= consultation._id %>"
+          >
+            Edit Consultation
           </button>
-        </form>
+        </div>
       </div>
     </div>
+
+    <!-- Edit Modal -->
+    <div
+      class="modal fade"
+      id="editModal<%= consultation._id %>"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="editModalLabel<%= consultation._id %>"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5
+              class="modal-title"
+              id="editModalLabel<%= consultation._id %>"
+              style="margin-left: auto"
+            >
+              Edit Consultation
+            </h5>
+            <button
+              type="button"
+              class="close"
+              data-dismiss="modal"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form
+              action="/edit-consultation/<%= consultation._id %>"
+              method="POST"
+              style="width: 50%; margin-left: auto; margin-right: auto"
+            >
+              <div class="form-group">
+                <label for="day">Day:</label>
+                <input
+                  type="text"
+                  id="day"
+                  name="day"
+                  class="form-control"
+                  value="<%= consultation.day %>"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="startTime">Start Time:</label>
+                <input
+                  type="text"
+                  id="startTime"
+                  name="startTime"
+                  class="form-control"
+                  value="<%= consultation.startTime %>"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="endTime">End Time:</label>
+                <input
+                  type="text"
+                  id="endTime"
+                  name="endTime"
+                  class="form-control"
+                  value="<%= consultation.endTime %>"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                class="btn btn-primary"
+                style="
+                  width: 100%;
+                  background-color: #031a39;
+                  border-color: #031a39;
+                "
+              >
+                Update Consultation
+              </button>
+            </form>
+          </div>
+          <div class="modal-footer"></div>
+        </div>
+      </div>
+    </div>
+
     <% }); %> <% } %>
   </div>
 </body>
-
-<!-- Modal -->
-<div
-  class="modal fade"
-  id="exampleModalCenter"
-  tabindex="-1"
-  role="dialog"
-  aria-labelledby="exampleModalCenterTitle"
-  aria-hidden="true"
->
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5
-          class="modal-title"
-          id="exampleModalCenterTitle"
-          style="margin-left: auto"
-        >
-          Add a slot
-        </h5>
-        <button
-          type="button"
-          class="close"
-          data-dismiss="modal"
-          aria-label="Close"
-        >
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form
-          method="POST"
-          action="/lecturer-availability"
-          style="width: 50%; margin-left: auto; margin-right: auto"
-        >
-          <div class="form-group">
-            <label for="day">Select day:</label>
-            <select id="day" name="day" class="form-control" required>
-              <option value="" disabled selected>Select day</option>
-              <option value="Monday">Monday</option>
-              <option value="Tuesday">Tuesday</option>
-              <option value="Wednesday">Wednesday</option>
-              <option value="Thursday">Thursday</option>
-              <option value="Friday">Friday</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="slots">Set start and end time</label>
-            <div id="slots" class="slot">
-              <input
-                type="time"
-                name="start[]"
-                class="form-control mb-2"
-                required
-              />
-              <input
-                type="time"
-                name="end[]"
-                class="form-control mb-2"
-                required
-              />
-              <input
-                type="number"
-                name="maxStudents[]"
-                class="form-control"
-                placeholder="Max students"
-                required
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            class="btn btn-primary"
-            style="
-              width: 100%;
-              background-color: #031a39;
-              border-color: #031a39;
-            "
-          >
-            Save availability
-          </button>
-        </form>
-      </div>
-      <div class="modal-footer"></div>
-    </div>
-  </div>
-</div>
-<script>
-  function editSlot(lecturerId, slotId) {
-    // Logic to handle edit action
-    console.log("Edit slot", lecturerId, slotId);
-  }
-
-  function deleteSlot(lecturerId, slotId) {
-    // Logic to handle delete action
-    console.log("Delete slot", lecturerId, slotId);
-  }
-</script>
-
-<%- include('./Partials/footer');%>
