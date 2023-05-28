@@ -75,8 +75,8 @@ exports.postSignIn = async (req, res) => {
     }
 
     // Check if provided password is correct
-    const isPasswordValid = password === lecturer.password;
-    if (!isPasswordValid) {
+    
+    if (!(bcrypt.compareSync(password, lecturer.password))) {
       req.flash("error", "Invalid email or password");
       return res.status(401).redirect("/login-lecturer");
     }
