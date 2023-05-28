@@ -600,3 +600,104 @@ test("A new lecturer can create a consultation", async () => {
   });
   expect(savedConsultation).not.toBeNull();
 });
+// Import necessary dependencies and modules
+const { editConsultation } = require("../controllers/consultationController");
+
+describe("editConsultation", () => {
+  // Mock request and response objects
+  let req;
+  let res;
+
+  beforeEach(() => {
+    req = {
+      params: {
+        id: "mockConsultationId",
+      },
+      body: {
+        day: "Monday",
+        startTime: "10:00",
+        endTime: "11:00",
+      },
+    };
+
+    res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+      redirect: jest.fn(),
+    };
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should update the consultation and redirect to the dashboard", async () => {
+    // Mock the Consultation.findById() and consultation.save() methods
+    const consultationMock = {
+      _id: "mockConsultationId",
+      day: "Wednesday",
+      startTime: "12:00",
+      endTime: "13:00",
+      save: jest.fn().mockResolvedValue(),
+    };
+    Consultation.findById = jest.fn().mockResolvedValue(consultationMock);
+
+    // Call the controller function
+    await editConsultation(req, res);
+
+    // Check if consultation details are updated
+    expect(consultationMock.day).toBe("Monday");
+    expect(consultationMock.startTime).toBe("10:00");
+    expect(consultationMock.endTime).toBe("11:00");
+
+    // Check if consultation.save() is called
+    expect(consultationMock.save).toHaveBeenCalled();
+
+    // Check if res.redirect() is called with the correct URL
+    expect(res.redirect).toHaveBeenCalledWith("/lecturer-dashboard");
+
+    // Check if other methods are not called
+    expect(res.status).not.toHaveBeenCalled();
+    expect(res.json).not.toHaveBeenCalled();
+  });
+
+  it("should handle consultation not found and return 404 error", async () => {
+    // Mock Consultation.findById() to return null
+    Consultation.findById = jest.fn().mockResolvedValue(null);
+
+    // Call the controller function
+    await editConsultation(req, res);
+
+    // Check if Consultation.findById() is called with the correct ID
+    expect(Consultation.findById).toHaveBeenCalledWith("mockConsultationId");
+
+    // Check if res.status() and res.json() are called with the correct error message
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.json).toHaveBeenCalledWith({ error: "Consultation not found" });
+
+    // Check if other methods are not called
+    expect(res.redirect).not.toHaveBeenCalled();
+  });
+
+  it("should handle errors and return 500 error", async () => {
+    // Mock Consultation.findById() to throw an error
+    Consultation.findById = jest
+      .fn()
+      .mockRejectedValue(new Error("Database error"));
+
+    // Call the controller function
+    await editConsultation(req, res);
+
+    // Check if Consultation.findById() is called with the correct ID
+    expect(Consultation.findById).toHaveBeenCalledWith("mockConsultationId");
+
+    // Check if res.status() and res.json() are called with the correct error message
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      error: "Failed to update consultation",
+    });
+
+    // Check if other methods are not called
+    expect(res.redirect).not.toHaveBeenCalled();
+  });
+});
