@@ -206,3 +206,63 @@ exports.joinConsultation = async (req, res) => {
     res.redirect("/see-lecturer-availability");
   }
 };
+
+// Controller method for updating consultation information
+exports.updateConsultation = async (req, res) => {
+  try {
+  //  const { id } = req.params;
+  id = "646e1dc3e81942693eee758f";
+    const { newStartTime, newEndTime } = req.body;
+
+    // Find the consultation by ID
+    const consultation = await Consultation.findById(id);
+
+    if (!consultation) {
+      console.log("Error: Consultation not found");
+      req.flash("error", "Consultation not found");
+      return res.redirect("/student-dashboard");
+    }
+
+    // Update the consultation with new time
+    consultation.startTime = newStartTime;
+    consultation.endTime = newEndTime;
+
+    // Save the updated consultation
+    await consultation.save();
+    console.log("Consultation updated successfully");
+    req.flash("success", "Consultation updated successfully");
+
+    // Notify the attendees about the updated consultation time
+    const studentEmails = consultation.attendees;
+    const message = `The consultation time has been updated. The new time is ${newStartTime} - ${newEndTime}.`;
+    sendNotificationEmails(studentEmails, message); // Implement the sendNotificationEmails function to send emails to the students
+
+    res.redirect("/student-dashboard");
+  } catch (err) {
+    console.log("Error: Failed to update consultation", err);
+    req.flash("error", "Failed to update consultation");
+    res.redirect("/student-dashboard");
+  }
+};
+
+// Controller method for rendering the consultation update form
+exports.renderConsultationUpdateForm = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the consultation by ID
+    const consultation = await Consultation.findById(id);
+
+    if (!consultation) {
+      console.log("Error: Consultation not found");
+      req.flash("error", "Consultation not found");
+      return res.redirect("/student-dashboard");
+    }
+
+    res.render("consultationUpdateForm", { title: "Update Consultation", consultation });
+  } catch (err) {
+    console.log("Error: Failed to render consultation update form", err);
+    req.flash("error", "Failed to render consultation update form");
+    res.redirect("/student-dashboard");
+  }
+};
