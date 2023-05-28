@@ -564,3 +564,23 @@ describe("cancelConsultation", () => {
     });
   });
 });
+
+
+
+describe('GET /lecturer-dashboard', () => {
+  test('responds with 200 status and text/html content type', done => {
+    request(app)
+      .get('/lecturer-dashboard')
+      .expect('Content-Type', /text\/html/)
+      .expect(200, done);
+  });
+
+  test('responds with the lecturer dashboard', done => {
+    request(app)
+      .get('/lecturer-dashboard')
+      .end((err, res) => {
+        expect(res.text).toContain('<title>Lecturer Dashboard</title>');
+        done();
+      });
+  });
+});
