@@ -15,6 +15,18 @@ exports.postLecturerAvailabilityForm = async (req, res) => {
     // Find the lecturer by their ID
     const lecturer = await Lecturer.findById(lecturerId);
     console.log(lecturer);
+
+    if (!lecturer) {
+      console.error(`No lecturer found with the id: ${lecturerId}`);
+      return res.status(500).render("error", { errorMessage: "No lecturer found" });
+    }
+    
+    // Make sure the lecturer has an 'availability' property
+    if (!lecturer.availability) {
+      console.error(`Lecturer with the id: ${lecturerId} has no 'availability' property`);
+      return res.status(500).render("error", { errorMessage: "Lecturer has no 'availability' property" });
+    }
+
     // Find the slots for the desired day
     const daySlots = lecturer.availability.find((slot) => slot.day === day);
 

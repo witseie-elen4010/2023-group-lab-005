@@ -18,6 +18,12 @@ exports.postSignUp = async (req, res) => {
     return res.redirect("register-student");
   }
 
+  const passwordRegEx = /^(?=.*[A-Z])(?=.*[!@#$&*]).{8,}$/;
+  if (!passwordRegEx.test(password)) {
+    req.flash("error", "Password must be at least 8 characters, have at least 1 capital letter and 1 special character");
+    return res.redirect("register-lecturer");
+  }
+
   try {
     // Check if a user with the provided email already exists
     const existingStudent = await Student.findOne({ email });
