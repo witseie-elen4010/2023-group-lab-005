@@ -84,38 +84,6 @@ exports.getLecturerById = async (req, res) => {
     res.status(500).send("Error retrieving lecturer");
   }
 };
-<<<<<<< HEAD
-
-exports.deleteConsultationSlot = async (req, res) => {
-  try {
-    const { lecturerId, slotId } = req.body;
-    // Retrieve lecturer document
-    const lecturer = await Lecturer.findById(lecturerId);
-
-    if (!lecturer) {
-      console.error(`No lecturer found with the id: ${lecturerId}`);
-      return res.status(500).json({ message: "No lecturer found" });
-    }
-
-    if (!lecturer.availability) {
-      console.error(`Lecturer with the id: ${lecturerId} has no 'availability' property`);
-      return res.status(500).json({ message: "Lecturer has no 'availability' property" });
-    }
-
-    // Filter out the deleted slot
-    lecturer.availability = lecturer.availability.map(day => {
-      day.slots = day.slots.filter(slot => slot._id != slotId);
-      return day;
-    });
-    // Save the lecturer document
-    await lecturer.save();
-    res.status(200).json({ message: 'Consultation slot deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error deleting consultation slot' });
-  }
-};
-
-=======
 exports.bookSlot = async (req, res) => {
   const { lecturerId, slotId } = req.body;
 
@@ -127,4 +95,3 @@ exports.bookSlot = async (req, res) => {
 
   res.redirect("/lecturer-availability");
 };
->>>>>>> main
