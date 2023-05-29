@@ -600,3 +600,50 @@ test("A new lecturer can create a consultation", async () => {
   });
   expect(savedConsultation).not.toBeNull();
 });
+
+const { cancelConsultationLec } = require("../controllers/consultationController");
+
+describe("Lecturer cancelConsultation", () => {
+  it("should cancel the consultation and redirect to the lecturer dashboard", async () => {
+    const req = {
+      params: { id: "consultationId" },
+    };
+    const res = {
+      redirect: jest.fn(),
+    };
+
+    // Mocking the Consultation model's findByIdAndRemove method
+    Consultation.findByIdAndRemove = jest.fn().mockResolvedValueOnce({});
+
+    await cancelConsultationLec(req, res);
+
+    expect(Consultation.findByIdAndRemove).toHaveBeenCalledWith(
+      "consultationId"
+    );
+    expect(res.redirect).toHaveBeenCalledWith("/lecturer-dashboard");
+  });
+
+  it("should handle errors and send a 500 response with an error message", async () => {
+    const req = {
+      params: { id: "consultationId" },
+    };
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+    };
+
+    const error = new Error("Failed to cancel the consultation");
+    // Mocking the Consultation model's findByIdAndRemove method to throw an error
+    Consultation.findByIdAndRemove = jest.fn().mockRejectedValueOnce(error);
+
+    await cancelConsultationLec(req, res);
+
+    expect(Consultation.findByIdAndRemove).toHaveBeenCalledWith(
+      "consultationId"
+    );
+    expect(res.status).toHaveBeenCalledWith(500);
+    expect(res.json).toHaveBeenCalledWith({
+      error: "Failed to cancel the consultation",
+    });
+  });
+});
