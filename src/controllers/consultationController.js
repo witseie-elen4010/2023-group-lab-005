@@ -1,6 +1,7 @@
 const Consultation = require("../models/consultationModel");
 const Lecturer = require("../models/lecturerModel");
 const Student = require("../models/studentModel");
+const mailer = require("../controllers/emailerController");
 // Controller method for rendering the consultation setup view
 exports.renderConsultationSetup = (req, res) => {
   // Render the consultation setup view
@@ -155,6 +156,8 @@ exports.cancelConsultation = async (req, res) => {
     // Find the consultation by ID and remove it
     await Consultation.findByIdAndRemove(id);
 
+    mailer.sendEmail(consultation.lecturerEmail, message);
+
     // Redirect to the student dashboard or any other desired page
     res.redirect("/student-dashboard");
   } catch (error) {
@@ -275,6 +278,7 @@ exports.cancelConsultationLec = async (req, res) => {
 
     // Find the consultation by ID and remove it
     await Consultation.findByIdAndRemove(id);
+
 
     // Redirect to the student dashboard or any other desired page
     res.redirect("/lecturer-dashboard");
