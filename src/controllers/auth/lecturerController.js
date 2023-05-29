@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const Lecturer = require("../../models/lecturerModel");
 const logger = require("../../controllers/logController");
+const bcrypt = require('bcryptjs')
 
 // Render the sign-up form
 exports.getSignUp = (req, res) => {
@@ -17,6 +18,12 @@ exports.postSignUp = async (req, res) => {
     return res.redirect("register-lecturer");
   }
 
+  const passwordRegEx = /^(?=.*[A-Z])(?=.*[!@#$&*]).{8,}$/;
+  if (!passwordRegEx.test(password)) {
+    req.flash("error", "Password must be at least 8 characters, have at least 1 capital letter and 1 special character");
+    return res.redirect("register-lecturer");
+  }
+
   try {
     // Check if a lecturer with the provided email already exists
     const existingLecturer = await Lecturer.findOne({ email });
@@ -26,7 +33,7 @@ exports.postSignUp = async (req, res) => {
     }
 
     // Create a new lecturer with the provided details
-    const lecturer = new Lecturer({ name, email, password });
+    const lecturer = new Lecturer({ name, email, password: bcrypt.hashSync(password) });
     await lecturer.save();
 
     // Generate JWT token and set it as a cookie
@@ -74,8 +81,8 @@ exports.postSignIn = async (req, res) => {
     }
 
     // Check if provided password is correct
-    const isPasswordValid = password === lecturer.password;
-    if (!isPasswordValid) {
+    
+    if (!(bcrypt.compareSync(password, lecturer.password))) {
       req.flash("error", "Invalid email or password");
       return res.status(401).redirect("/login-lecturer");
     }

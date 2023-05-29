@@ -3,8 +3,10 @@ const app = require("../server");
 const Student = require("../models/studentModel");
 const Lecturer = require("../models/lecturerModel");
 const Consultation = require("../models/consultationModel");
+
 const mailer = require("../controllers/emailController");
 const nodemailer = require("nodemailer");
+
 
 require("dotenv").config();
 
@@ -26,8 +28,8 @@ describe("Student registration", () => {
     const studentData = {
       name: "John Doe",
       email: "johndoe@example.com",
-      password: "password",
-      confirmPassword: "password",
+      password: "P@ssword",
+      confirmPassword: "P@ssword",
     };
 
     const response = await request(app)
@@ -62,8 +64,8 @@ describe("Lecturer registration", () => {
     const lecturerData = {
       name: "Jane Smith",
       email: "janesmith@example.com",
-      password: "password",
-      confirmPassword: "password",
+      password: "P@ssword",
+      confirmPassword: "P@ssword",
     };
 
     const response = await request(app)
@@ -86,7 +88,7 @@ describe("Student login", () => {
     const studentData = {
       name: "John Doe",
       email: "johndoe@example.com",
-      password: "password",
+      password: "P@ssword",
     };
 
     await Student.create(studentData);
@@ -100,7 +102,7 @@ describe("Student login", () => {
   test("Existing student can log in with correct credentials", async () => {
     const loginData = {
       email: "johndoe@example.com",
-      password: "password",
+      password: "P@ssword",
     };
 
     const response = await request(app).post("/login-student").send(loginData);
@@ -112,7 +114,7 @@ describe("Student login", () => {
     // Log in the lecturer
     const loginData = {
       email: "janesmith@johndoe.com",
-      password: "password",
+      password: "P@ssword",
     };
 
     let response = await request(app).post("/login-student").send(loginData);
@@ -138,6 +140,21 @@ describe("Student login", () => {
 
     expect(response.statusCode).toBe(302); // unauthorized status code
   });
+
+  test("Student cannot create account with invalid password", async () => {
+    const registerData = {
+      email: "newstudent@example.com",
+      password: "invalidpassword",
+      confirmPassword: "invalidpassword",
+      name: "New Student"
+    };
+  
+    const response = await request(app).post("/register-student").send(registerData);
+  
+    // The server should respond with a redirection status code (e.g., 302) indicating the user is redirected back to the registration page
+    expect(response.statusCode).toBe(302);
+  });
+  
 });
 
 describe("Lecturer login", () => {
@@ -146,7 +163,7 @@ describe("Lecturer login", () => {
     const lecturerData = {
       name: "Jane Smith",
       email: "janesmith@example.com",
-      password: "password",
+      password: "P@ssword",
     };
 
     await Lecturer.create(lecturerData);
@@ -160,7 +177,7 @@ describe("Lecturer login", () => {
   test("Existing lecturer can log in with correct credentials", async () => {
     const loginData = {
       email: "janesmith@example.com",
-      password: "password",
+      password: "P@ssword",
     };
 
     const response = await request(app).post("/login-lecturer").send(loginData);
@@ -172,7 +189,7 @@ describe("Lecturer login", () => {
     // Log in the lecturer
     const loginData = {
       email: "janesmith@example.com",
-      password: "password",
+      password: "P@ssword",
     };
 
     let response = await request(app).post("/login-lecturer").send(loginData);
@@ -198,6 +215,20 @@ describe("Lecturer login", () => {
 
     expect(response.statusCode).toBe(302); // unauthorized status code
   });
+
+  test("Lecturer cannot create account with invalid password", async () => {
+    const registerData = {
+      email: "newlec@example.com",
+      password: "invalidpassword",
+      confirmPassword: "invalidpassword",
+      name: "New Lecturer"
+    };
+  
+    const response = await request(app).post("/register-lecturer").send(registerData);
+  
+    // The server should respond with a redirection status code (e.g., 302) indicating the user is redirected back to the registration page
+    expect(response.statusCode).toBe(302);
+  });
 });
 describe("Retrieve all lecturers and their availability", () => {
   beforeEach(async () => {
@@ -206,7 +237,7 @@ describe("Retrieve all lecturers and their availability", () => {
       {
         name: "Lecturer 1",
         email: "lecturer1@example.com",
-        password: "password1",
+        password: "P@ssword1",
         availability: [
           {
             day: "Monday",
@@ -243,7 +274,7 @@ describe("Retrieve all lecturers and their availability", () => {
       {
         name: "Lecturer 2",
         email: "lecturer2@example.com",
-        password: "password2",
+        password: "P@ssword2",
         availability: [
           {
             day: "Wednesday",
@@ -572,7 +603,7 @@ test("A new lecturer can create a consultation", async () => {
   const lecturerData = {
     name: "Jane Smith",
     email: "janesmith@example.com",
-    password: "password",
+    password: "P@ssword",
   };
   const lecturer = new Lecturer(lecturerData);
   await lecturer.save();
@@ -603,6 +634,34 @@ test("A new lecturer can create a consultation", async () => {
   });
   expect(savedConsultation).not.toBeNull();
 });
+
+describe('Password Hashing', () => {
+  test('Should create a new user with hashed password', async () => {
+    const userData = {
+      name: 'John Doe',
+      email: 'johndoe@example.com',
+      password: 'P@ssword',
+      confirmPassword: 'P@ssword',
+    };
+
+    const response = await request(app)
+      .post('/register-student')
+      .send(userData);
+
+    // Assert that the student was created successfully
+    expect(response.statusCode).toBe(302);
+
+    // Get the created student from the database
+    const createdUser = await Student.findOne({ email: userData.email });
+
+    // Assert that the password is hashed
+    expect(createdUser).toBeDefined(); 
+    expect(bcrypt.compareSync(userData.password, createdUser.password)).toBe(true);
+  });
+
+});
+
+
 
 const { cancelConsultationLec } = require("../controllers/consultationController");
 
@@ -649,6 +708,7 @@ describe("Lecturer cancelConsultation", () => {
       error: "Failed to cancel the consultation",
     });
   });
+
 });
 
 
@@ -731,3 +791,6 @@ describe('sendEmail function', () => {
     );
   });
 });
+
+});
+
