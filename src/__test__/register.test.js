@@ -136,6 +136,21 @@ describe("Student login", () => {
 
     expect(response.statusCode).toBe(302); // unauthorized status code
   });
+
+  test("Student cannot create account with invalid password", async () => {
+    const registerData = {
+      email: "newstudent@example.com",
+      password: "invalidpassword",
+      confirmPassword: "invalidpassword",
+      name: "New Student"
+    };
+  
+    const response = await request(app).post("/register-student").send(registerData);
+  
+    // The server should respond with a redirection status code (e.g., 302) indicating the user is redirected back to the registration page
+    expect(response.statusCode).toBe(302);
+  });
+  
 });
 
 describe("Lecturer login", () => {
@@ -195,6 +210,20 @@ describe("Lecturer login", () => {
     const response = await request(app).post("/login-lecturer").send(loginData);
 
     expect(response.statusCode).toBe(302); // unauthorized status code
+  });
+
+  test("Lecturer cannot create account with invalid password", async () => {
+    const registerData = {
+      email: "newlec@example.com",
+      password: "invalidpassword",
+      confirmPassword: "invalidpassword",
+      name: "New Lecturer"
+    };
+  
+    const response = await request(app).post("/register-lecturer").send(registerData);
+  
+    // The server should respond with a redirection status code (e.g., 302) indicating the user is redirected back to the registration page
+    expect(response.statusCode).toBe(302);
   });
 });
 describe("Retrieve all lecturers and their availability", () => {
