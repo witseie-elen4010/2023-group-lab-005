@@ -1,0 +1,115 @@
+<%- include('./Partials/inAppheader'); %>
+
+<main class="d-flex justify-content-center align-items-center flex-column mt-5">
+  
+ <!-- Display flash messages -->
+ <% if (messages.success) { %>
+  <div class="alert alert-success" role="alert">
+    <%= messages.success %>
+  </div>
+<% } else if (messages.error) { %>
+  <div class="alert alert-danger" role="alert">
+    <%= messages.error %>
+  </div>
+<% } %>
+<div id="flash-message" class="flash-message"></div>
+  <% if (lecturers.length > 0) { %>
+
+      <% lecturers.forEach((lecturer) => { %>
+        <% if (lecturer.availability.length > 0 && lecturer.availability.some(slot => slot.slots.length > 0)) { %>
+
+            <h5 style="text-align: center;"><%= lecturer.name %></h5>
+
+         
+
+            <table class="table table-bordered" style="width: 60%; margin-bottom: 4rem;">
+              <thead style="background-color: #ffab06">
+                <tr>
+                  <th>Day</th>
+                  <th>Start Time</th>
+                  <th>End Time</th>
+                  <th>Max Students</th>
+                  <th>Book</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% lecturer.availability.forEach((slot) => { %>
+                  <% if (slot.slots.length > 0) { %>
+                    <tr>
+                      <td rowspan="<%= slot.slots.length %>"><%= slot.day %></td>
+                      <% slot.slots.forEach((timeSlot, index) => { %>
+                        <% if (index > 0) { %>
+                          <tr>
+                        <% } %>
+                        <td><%= timeSlot.startTime %></td>
+                        <td><%= timeSlot.endTime %></td>
+                        <td><%= timeSlot.maxStudents %></td>
+                        <td>
+                          <% if (timeSlot.isBook) { %>
+                            Booked
+                          <% } else { %>
+                            <a href="#" onclick="performAction('<%= lecturer.email %>', '<%= slot.day %>', '<%= timeSlot.startTime %>', '<%= timeSlot.endTime %>', '<%= timeSlot.maxStudents %>')">
+                              <i class="far fa-edit" style="color: black; margin-left: 1rem;"></i>
+                            </a>
+                          <% } %>
+                        </td>
+                        <% if (index === slot.slots.length - 1) { %>
+                          </tr>
+                        <% } %>
+                      <% }); %>
+                    </tr>
+                    
+                  <% } %>
+                <% }); %>
+              </tbody>
+            </table>
+
+        <% } %>
+      <% }); %>
+
+  <% } else { %>
+    <p>No lecturers found</p>
+  <% } %>
+  <form method="POST" action="/consultation" class="consultation-form">
+    <label for="attendees" class="hidden" id="attendeesList">Add all attendees' emails separeted by comma</label>
+    <input type="text" id="attendees" name="attendees" class="hidden"  required />
+  
+    <label for="lecturerEmail" class="hidden">Lecturer Email</label>
+    <input type="email" id="lecturerEmail" name="lecturerEmail" class="hidden" required />
+  
+    <label for="maxStudents" class="hidden">Max Students Allowed</label>
+    <input type="number" id="maxStudents" name="maxStudents" class="hidden" required />
+  
+    <label for="day" class="hidden">Day</label>
+    <input type="text" id="day" name="day" class="hidden" required />
+  
+    <label for="startTime" class="hidden">Start Time</label>
+    <input type="text" id="startTime" name="startTime" class="hidden" required />
+  
+    <label for="endTime" class="hidden" >End Time</label>
+    <input type="text" id="endTime" name="endTime" class="hidden" required />
+  
+    <button id="setupButton" type="submit" class="hidden" style="background-color:#ffab06; border-color: #ffab06;">Set up Consultation</button>
+  </form>
+  
+  <script>
+    function performAction(email, day, startTime, endTime, maxStudents) {
+      document.getElementById('attendees').value = '';
+      document.getElementById('lecturerEmail').value = email;
+      document.getElementById('maxStudents').value = maxStudents;
+      document.getElementById('day').value = day;
+      document.getElementById('startTime').value = startTime;
+      document.getElementById('endTime').value = endTime;
+      // document.getElementById('consultation-form').submit();
+      const setupButton = document.getElementById("setupButton");
+      setupButton.classList.remove("hidden");
+
+      const attendees = document.getElementById("attendees");
+      attendees.classList.remove("hidden");
+
+      const attendeesList = document.getElementById("attendeesList");
+      attendeesList.classList.remove("hidden");
+    }
+  </script>
+ 
+</main>

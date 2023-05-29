@@ -41,7 +41,10 @@ router.delete(
 );
 
 
-
+router.get(
+  "/see-lecturer-availability",
+  availabilityController.getAllLecturers
+);
 
 
 module.exports = router;
