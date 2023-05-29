@@ -267,3 +267,19 @@ exports.editConsultation = async (req, res) => {
     res.status(500).json({ error: "Failed to update consultation" });
   }
 };
+
+// Controller for consultation cancellation
+exports.cancelConsultationLec = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the consultation by ID and remove it
+    await Consultation.findByIdAndRemove(id);
+
+    // Redirect to the student dashboard or any other desired page
+    res.redirect("/lecturer-dashboard");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to cancel the consultation" });
+  }
+};
