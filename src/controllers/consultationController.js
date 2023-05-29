@@ -1,7 +1,7 @@
 const Consultation = require("../models/consultationModel");
 const Lecturer = require("../models/lecturerModel");
 const Student = require("../models/studentModel");
-const mailer = require("../controllers/emailerController");
+const mailer = require("./emailController");
 // Controller method for rendering the consultation setup view
 exports.renderConsultationSetup = (req, res) => {
   // Render the consultation setup view
