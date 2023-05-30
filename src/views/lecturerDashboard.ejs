@@ -1,45 +1,159 @@
 <%- include('./Partials/inAppheaderLec');%>
 
 <body>
-  <div class="container">
+  <div class="container d-flex justify-content-center">
+    <div class="col-12 col-md-6 col-sm-12">
+
+  
     <h1>Upcoming Consultations</h1>
     <% if (upcomingConsultations.length === 0) { %>
     <p>No upcoming consultations found.</p>
     <% } else { %> <% upcomingConsultations.forEach((consultation) => { %>
-    <div class="card mb-3">
-      <div class="card-body">
-        <h5 class="card-title">
-          Consultation with <%= consultation.lecturerEmail %>
-        </h5>
-        <p class="card-text">Date: <%= consultation.day %></p>
-        <p class="card-text">
-          Time: <%= consultation.startTime %> - <%= consultation.endTime %>
-        </p>
-        <p class="card-text">Attendees: <%= consultation.attendees.length %></p>
-        <% consultation.attendeeNames.forEach((name) => { %>
-        <p class="card-text">Attendee Name: <%= name %></p>
-        <% }); %>
-        <div>
-          <form
-            action="/cancel-consultation/<%= consultation._id %>"
-            method="POST"
-          >
-            <button type="submit" class="btn btn-danger">
-              Cancel Consultation
-            </button>
-          </form>
-          <button
+
+      <div class="col-md-6 mb-6">
+      <div class="card">
+        <div
+          class="card-header"
+          style="background-color: #031a39; color: #ffab06"
+        >
+          <p class="card-title text-center ml-4" style="font-weight: bold">
+            Consultation on                 <button
+            style="background-color: #031a39; border-color: #031a39; margin-top: auto; margin-left: auto;"
             type="button"
             class="btn btn-primary"
             data-toggle="modal"
             data-target="#editModal<%= consultation._id %>"
           >
-            Edit Consultation
+          <i class="fa-solid fa-pen-to-square"></i>
           </button>
+          </p>
+          <p
+            class="text-center"
+            style="color: #aaa; font-weight: 300; font-size: small"
+          >
+          <%= consultation.day %> 
+        
+          </p>
         </div>
-      </div>
-    </div>
+        <div class="card-body">
+          <p class="card-text" style="color: #aaa; font-weight: 300; font-size: small">
+            <%= consultation.attendees.length %> Attendees
+          </p>
+          <p class="card-text"><%= consultation.day %></p>
+          <div
+            class="card-text mt-2 mb-1"
+            style="color: #aaa; font-weight: 300; font-size: small"
+          >
+            <%= consultation.startTime %> - <%= consultation.endTime %>
+          </div>
+          <% consultation.attendeeNames.forEach((name) => { %>
+          <p class="card-text">Attendee Name: <%= name %></p>
+          <% }); %>
+          <form
+            action="/cancel-consultationLec/<%= consultation._id %>"
+            method="POST"
+          >
+            <button
+              type="submit"
+              class="btn btn-danger"
+              style="width: 100%"
+            >
+              Cancel Consultation
+            </button>
 
+          </form>
+    
+
+</div>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="exampleModalCenter"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5
+          class="modal-title"
+          id="exampleModalCenterTitle"
+          style="margin-left: auto"
+        >
+          Add a slot
+        </h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form
+          method="POST"
+          action="/lecturer-availability"
+          style="width: 50%; margin-left: auto; margin-right: auto"
+        >
+          <div class="form-group">
+            <label for="day">Select day:</label>
+            <select id="day" name="day" class="form-control" required>
+              <option value="" disabled selected>Select day</option>
+              <option value="Monday">Monday</option>
+              <option value="Tuesday">Tuesday</option>
+              <option value="Wednesday">Wednesday</option>
+              <option value="Thursday">Thursday</option>
+              <option value="Friday">Friday</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="slots">Set start and end time</label>
+            <div id="slots" class="slot">
+              <input
+                type="time"
+                name="start[]"
+                class="form-control mb-2"
+                required
+              />
+              <input
+                type="time"
+                name="end[]"
+                class="form-control mb-2"
+                required
+              />
+              <input
+                type="number"
+                name="maxStudents[]"
+                class="form-control"
+                placeholder="Max students"
+                required
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="
+              width: 100%;
+              background-color: #031a39;
+              border-color: #031a39;
+            "
+          >
+            Save availability
+          </button>
+        </form>
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
     <!-- Edit Modal -->
     <div
       class="modal fade"
@@ -124,6 +238,8 @@
         </div>
       </div>
     </div>
+
+    
 
     <% }); %> <% } %>
   </div>
