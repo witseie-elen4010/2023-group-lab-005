@@ -156,6 +156,8 @@ exports.cancelConsultation = async (req, res) => {
     // Find the consultation by ID and remove it
     await Consultation.findByIdAndRemove(id);
 
+
+
     mailer.sendEmail(consultation.lecturerEmail, message);
 
     // Redirect to the student dashboard or any other desired page
@@ -258,13 +260,15 @@ exports.editConsultation = async (req, res) => {
     if (!consultation) {
       return res.status(404).json({ error: "Consultation not found" });
     }
+    const oldTime = consultation.startTime 
+    const message = 'Your consultation on ' + consultation.day + ' at ' + oldTime + ' has been changed. Login to check new date and time'
 
     // Update consultation details
     consultation.day = day;
     consultation.startTime = startTime;
     consultation.endTime = endTime;
 
-    const message = 'Your consultation on ' + consultation.day + ' at ' + consultation.startTime + ' has been changed. Login to check new date and time'
+   
     
     // Save the updated consultation
     await consultation.save();
@@ -289,8 +293,6 @@ exports.cancelConsultationLec = async (req, res) => {
     const consultation = Consultation.findById(id)
     // Find the consultation by ID and remove it
     await Consultation.findByIdAndRemove(id);
-
-    
 
     // Redirect to the student dashboard or any other desired page
     res.redirect("/lecturer-dashboard");

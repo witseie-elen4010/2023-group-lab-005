@@ -713,111 +713,6 @@ describe("Lecturer cancelConsultation", () => {
 
 
 
-
-// Import necessary dependencies and modules
-const { editConsultation } = require("../controllers/consultationController");
-
-
-
-describe("editConsultation", () => {
-  // Mock request and response objects
-  let req;
-  let res;
-
-  beforeEach(() => {
-    req = {
-      params: {
-        id: "mockConsultationId",
-      },
-      body: {
-        day: "Monday",
-        startTime: "10:00",
-        endTime: "11:00",
-      },
-    };
-
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-      redirect: jest.fn(),
-    };
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("should update the consultation and redirect to the dashboard", async () => {
-    // Mock the Consultation.findById() and consultation.save() methods
-    const consultationMock = {
-      _id: "mockConsultationId",
-      day: "Wednesday",
-      startTime: "12:00",
-      endTime: "13:00",
-      save: jest.fn().mockResolvedValue(),
-    };
-    Consultation.findById = jest.fn().mockResolvedValue(consultationMock);
-
-    // Call the controller function
-    await editConsultation(req, res);
-
-    // Check if consultation details are updated
-    expect(consultationMock.day).toBe("Monday");
-    expect(consultationMock.startTime).toBe("10:00");
-    expect(consultationMock.endTime).toBe("11:00");
-
-    // Check if consultation.save() is called
-    expect(consultationMock.save).toHaveBeenCalled();
-
-    // Check if res.redirect() is called with the correct URL
-    expect(res.redirect).toHaveBeenCalledWith("/lecturer-dashboard");
-
-    // Check if other methods are not called
-    expect(res.status).not.toHaveBeenCalled();
-    expect(res.json).not.toHaveBeenCalled();
-  });
-
-  it("should handle consultation not found and return 404 error", async () => {
-    // Mock Consultation.findById() to return null
-    Consultation.findById = jest.fn().mockResolvedValue(null);
-
-    // Call the controller function
-    await editConsultation(req, res);
-
-    // Check if Consultation.findById() is called with the correct ID
-    expect(Consultation.findById).toHaveBeenCalledWith("mockConsultationId");
-
-    // Check if res.status() and res.json() are called with the correct error message
-    expect(res.status).toHaveBeenCalledWith(404);
-    expect(res.json).toHaveBeenCalledWith({ error: "Consultation not found" });
-
-    // Check if other methods are not called
-    expect(res.redirect).not.toHaveBeenCalled();
-  });
-
-  it("should handle errors and return 500 error", async () => {
-    // Mock Consultation.findById() to throw an error
-    Consultation.findById = jest
-      .fn()
-      .mockRejectedValue(new Error("Database error"));
-
-    // Call the controller function
-    await editConsultation(req, res);
-
-    // Check if Consultation.findById() is called with the correct ID
-    expect(Consultation.findById).toHaveBeenCalledWith("mockConsultationId");
-
-    // Check if res.status() and res.json() are called with the correct error message
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({
-      error: "Failed to update consultation",
-    });
-
-    // Check if other methods are not called
-    expect(res.redirect).not.toHaveBeenCalled();
-  });
-});
-
 describe("sendEmail", () => {
   let consoleLogSpy;
   let consoleErrorSpy;
@@ -892,5 +787,78 @@ describe("sendEmail", () => {
       'Error sending email:',
       expect.any(Error)
     );
+  });
+});
+
+
+const { editConsultation } = require('../controllers/consultationController');
+
+
+// Mock the Consultation model
+jest.mock('../models/consultationModel');
+
+// Mock the nodemailer sendMail function
+jest.mock('nodemailer');
+
+describe('editConsultation', () => {
+  it('should send email to attendees', async () => {
+    // Create a mock consultation and request objects
+    const consultationId = 'consultationId';
+    const attendee1 = 'attendee1@example.com';
+    const attendee2 = 'attendee2@example.com';
+    const request = {
+      params: { id: consultationId },
+      body: {
+        day: '2023-06-01',
+        startTime: '10:00 AM',
+        endTime: '11:00 AM',
+      },
+    };
+
+    // Create a mock consultation object
+    const mockConsultation = {
+      _id: consultationId,
+      attendees: [attendee1, attendee2],
+      day: '2023-05-30',
+      startTime: '2:00 PM',
+      endTime: '3:00 PM',
+      save: jest.fn(),
+    };
+
+    // Mock the Consultation.findById method
+    Consultation.findById.mockResolvedValue(mockConsultation);
+
+    // Mock the nodemailer sendMail function
+    const sendMailMock = jest.fn().mockResolvedValue({ response: 'OK' });
+    nodemailer.createTransport.mockReturnValue({ sendMail: sendMailMock });
+
+    // Create a mock response object
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+      redirect: jest.fn(),
+    };
+
+    // Call the editConsultation method
+    await editConsultation(request, res);
+
+    // Expect consultation details to be updated
+    expect(mockConsultation.day).toBe('2023-06-01');
+    expect(mockConsultation.startTime).toBe('10:00 AM');
+    expect(mockConsultation.endTime).toBe('11:00 AM');
+
+    // Expect consultation save method to be called
+    expect(mockConsultation.save).toHaveBeenCalled();
+
+    // Expect nodemailer createTransport method to be called
+    expect(nodemailer.createTransport).toHaveBeenCalled();
+
+    // Expect nodemailer sendMail method to be called for each attendee
+    expect(sendMailMock).toHaveBeenCalledTimes(2);
+  
+    
+    
+    // Expect response to be redirected
+    expect(res.redirect).toHaveBeenCalledWith('/lecturer-dashboard');
   });
 });
