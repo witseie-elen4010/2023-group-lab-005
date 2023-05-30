@@ -1,6 +1,7 @@
 const Consultation = require("../models/consultationModel");
 const Lecturer = require("../models/lecturerModel");
 const Student = require("../models/studentModel");
+const mailer = require("./emailController");
 // Controller method for rendering the consultation setup view
 exports.renderConsultationSetup = (req, res) => {
   // Render the consultation setup view
@@ -155,6 +156,8 @@ exports.cancelConsultation = async (req, res) => {
     // Find the consultation by ID and remove it
     await Consultation.findByIdAndRemove(id);
 
+    mailer.sendEmail(consultation.lecturerEmail, message);
+
     // Redirect to the student dashboard or any other desired page
     res.redirect("/student-dashboard");
   } catch (error) {
@@ -268,6 +271,7 @@ exports.editConsultation = async (req, res) => {
   }
 };
 
+
 // Controller method for updating consultation information
 exports.editConsultation = async (req, res) => {
   try {
@@ -294,5 +298,21 @@ exports.editConsultation = async (req, res) => {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Failed to update consultation" });
+  }
+};
+// Controller for consultation cancellation
+exports.cancelConsultationLec = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the consultation by ID and remove it
+    await Consultation.findByIdAndRemove(id);
+
+
+    // Redirect to the student dashboard or any other desired page
+    res.redirect("/lecturer-dashboard");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to cancel the consultation" });
   }
 };

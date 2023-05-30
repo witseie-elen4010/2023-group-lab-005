@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const Student = require("../../models/studentModel");
 const logger = require("../../controllers/logController");
+const bcrypt = require('bcryptjs')
 
 // Render the sign-up form
 exports.getSignUp = (req, res) => {
@@ -17,6 +18,12 @@ exports.postSignUp = async (req, res) => {
     return res.redirect("register-student");
   }
 
+  const passwordRegEx = /^(?=.*[A-Z])(?=.*[!@#$&*]).{8,}$/;
+  if (!passwordRegEx.test(password)) {
+    req.flash("error", "Password must be at least 8 characters, have at least 1 capital letter and 1 special character");
+    return res.redirect("register-lecturer");
+  }
+
   try {
     // Check if a user with the provided email already exists
     const existingStudent = await Student.findOne({ email });
@@ -26,15 +33,8 @@ exports.postSignUp = async (req, res) => {
     }
 
     // Create a new user with the provided details
-    const student = new Student({ name, email, password });
+    const student = new Student({ name, email, password: bcrypt.hashSync(password) });
     await student.save();
-
-    // // Generate JWT token and set it as a cookie
-    // const token = jwt.sign({ studentId: student._id }, process.env.JWT_SECRET);
-    // res.cookie("jwt", token, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === "production",
-    // });
 
      // Generate JWT token
      const token = jwt.sign(
@@ -75,8 +75,8 @@ exports.postSignIn = async (req, res) => {
     }
 
     // Check if provided password is correct
-    const isPasswordValid = password === student.password;
-    if (!isPasswordValid) {
+    
+    if (!(bcrypt.compareSync(password, student.password))) {
       req.flash("error", "Invalid email or password");
       return res.status(401).redirect("/login-student");
     }
