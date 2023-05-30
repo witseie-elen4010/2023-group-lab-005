@@ -17,3 +17,13 @@ router.get("/login-student", studentController.getSignIn);
 router.post("/login-student", studentController.postSignIn);
 
 module.exports = router;
+
+//Render password reset form
+router.get("/reset-password", studentController.getResetForm);
+
+// Handle the password reset form submission
+router.post("/reset-password", studentController.resetPassword);
+
+router.get("/resetpassword-student/:userId", studentController.resetPasswordForm);
+
+router.post("/resetpassword-student/:userId", studentController.newPassword);
