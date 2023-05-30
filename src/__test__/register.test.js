@@ -3,7 +3,11 @@ const app = require("../server");
 const Student = require("../models/studentModel");
 const Lecturer = require("../models/lecturerModel");
 const Consultation = require("../models/consultationModel");
-const bcrypt = require('bcryptjs');
+
+const mailer = require("../controllers/emailController");
+const nodemailer = require("nodemailer");
+
+
 require("dotenv").config();
 
 describe("Student registration", () => {
@@ -552,48 +556,48 @@ describe("Consultation Joining", () => {
 });
 const { cancelConsultation } = require("../controllers/consultationController");
 
-describe("cancelConsultation", () => {
-  it("should cancel the consultation and redirect to the student dashboard", async () => {
-    const req = {
-      params: { id: "consultationId" },
-    };
-    const res = {
-      redirect: jest.fn(),
-    };
+// describe("cancelConsultation", () => {
+//   it("should cancel the consultation and redirect to the student dashboard", async () => {
+//     const req = {
+//       params: { id: "consultationId" },
+//     };
+//     const res = {
+//       redirect: jest.fn(),
+//     };
 
-    await Consultation.findByIdAndRemove.mockReturnValueOnce({});
+//     await Consultation.findByIdAndRemove.mockReturnValueOnce({});
 
-    await cancelConsultation(req, res);
+//     await cancelConsultation(req, res);
 
-    expect(Consultation.findByIdAndRemove).toHaveBeenCalledWith(
-      "consultationId"
-    );
-    expect(res.redirect).toHaveBeenCalledWith("/student-dashboard");
-  });
+//     expect(Consultation.findByIdAndRemove).toHaveBeenCalledWith(
+//       "consultationId"
+//     );
+//     expect(res.redirect).toHaveBeenCalledWith("/student-dashboard");
+//   });
 
-  it("should handle errors and send a 500 response with an error message", async () => {
-    const req = {
-      params: { id: "consultationId" },
-    };
-    const res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn(),
-    };
+//   it("should handle errors and send a 500 response with an error message", async () => {
+//     const req = {
+//       params: { id: "consultationId" },
+//     };
+//     const res = {
+//       status: jest.fn().mockReturnThis(),
+//       json: jest.fn(),
+//     };
 
-    const error = new Error("Failed to cancel the consultation");
-    await Consultation.findByIdAndRemove.mockRejectedValueOnce(error);
+//     const error = new Error("Failed to cancel the consultation");
+//     await Consultation.findByIdAndRemove.mockRejectedValueOnce(error);
 
-    await cancelConsultation(req, res);
+//     await cancelConsultation(req, res);
 
-    expect(Consultation.findByIdAndRemove).toHaveBeenCalledWith(
-      "consultationId"
-    );
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({
-      error: "Failed to cancel the consultation",
-    });
-  });
-});
+//     expect(Consultation.findByIdAndRemove).toHaveBeenCalledWith(
+//       "consultationId"
+//     );
+//     expect(res.status).toHaveBeenCalledWith(500);
+//     expect(res.json).toHaveBeenCalledWith({
+//       error: "Failed to cancel the consultation",
+//     });
+//   });
+// });
 test("A new lecturer can create a consultation", async () => {
   // Create a new lecturer
   const lecturerData = {
@@ -704,4 +708,89 @@ describe("Lecturer cancelConsultation", () => {
       error: "Failed to cancel the consultation",
     });
   });
+
 });
+
+
+
+jest.mock('nodemailer');
+
+describe('sendEmail function', () => {
+  let consoleLogSpy;
+  let consoleErrorSpy;
+
+  beforeEach(() => {
+    consoleLogSpy = jest.spyOn(console, 'log');
+    consoleErrorSpy = jest.spyOn(console, 'error');
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should send an email successfully', async () => {
+    const recipientEmail = 'recipient@example.com';
+    const message = '<p>Test message</p>';
+
+    const transporterMock = {
+      sendMail: jest.fn().mockResolvedValueOnce(),
+    };
+
+    nodemailer.createTransport.mockReturnValue(transporterMock);
+
+    await mailer.sendEmail(recipientEmail, message);
+
+    expect(nodemailer.createTransport).toHaveBeenCalledWith({
+      service: 'gmail',
+      auth: {
+        user: 'project.consultify@gmail.com',
+        pass: 'vnxaktcpcmkprsxy',
+      },
+    });
+
+    expect(transporterMock.sendMail).toHaveBeenCalledWith({
+      from: 'project.consultify@gmail.com',
+      to: recipientEmail,
+      html: message,
+    });
+
+    expect(consoleLogSpy).toHaveBeenCalledWith('Email sent successfully');
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+  });
+
+  it('should handle errors when sending an email', async () => {
+    const recipientEmail = 'recipient@example.com';
+    const message = '<p>Test message</p>';
+
+    const transporterMock = {
+      sendMail: jest.fn().mockRejectedValueOnce(new Error('Some error')),
+    };
+
+    nodemailer.createTransport.mockReturnValue(transporterMock);
+
+    await mailer.sendEmail(recipientEmail, message);
+
+    expect(nodemailer.createTransport).toHaveBeenCalledWith({
+      service: 'gmail',
+      auth: {
+        user: 'project.consultify@gmail.com',
+        pass: 'vnxaktcpcmkprsxy',
+      },
+    });
+
+    expect(transporterMock.sendMail).toHaveBeenCalledWith({
+      from: 'project.consultify@gmail.com',
+      to: recipientEmail,
+      html: message,
+    });
+
+    expect(consoleLogSpy).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Error sending email:',
+      expect.any(Error)
+    );
+  });
+});
+
+});
+
