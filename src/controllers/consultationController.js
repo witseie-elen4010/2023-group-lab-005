@@ -244,32 +244,6 @@ exports.getUpcomingConsultations = async (req, res) => {
   }
 };
 
-exports.editConsultation = async (req, res) => {
-  try {
-    const { consultationId } = req.params;
-    const { day, startTime, endTime } = req.body;
-
-    // Find the consultation by ID
-    const consultation = await Consultation.findById(consultationId);
-
-    if (!consultation) {
-      return res.status(404).json({ error: "Consultation not found" });
-    }
-
-    // Update consultation details
-    consultation.day = day;
-    consultation.startTime = startTime;
-    consultation.endTime = endTime;
-
-    // Save the updated consultation
-    await consultation.save();
-
-    res.status(200).json({ message: "Consultation updated successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Failed to update consultation" });
-  }
-};
 
 
 // Controller method for updating consultation information
@@ -290,8 +264,16 @@ exports.editConsultation = async (req, res) => {
     consultation.startTime = startTime;
     consultation.endTime = endTime;
 
+    const message = 'Your consultation on ' + consultation.day + ' at ' + consultation.startTime + ' has been changed. Login to check new date and time'
+    
     // Save the updated consultation
     await consultation.save();
+
+   
+
+    for(i =0; i < consultation.attendees.length; i++){
+      mailer.sendEmail(consultation.attendees[i], message);
+    }
 
     // Redirect to lecturer dashboard
     return res.redirect("/lecturer-dashboard");
@@ -304,10 +286,11 @@ exports.editConsultation = async (req, res) => {
 exports.cancelConsultationLec = async (req, res) => {
   try {
     const { id } = req.params;
-
+    const consultation = Consultation.findById(id)
     // Find the consultation by ID and remove it
     await Consultation.findByIdAndRemove(id);
 
+    
 
     // Redirect to the student dashboard or any other desired page
     res.redirect("/lecturer-dashboard");

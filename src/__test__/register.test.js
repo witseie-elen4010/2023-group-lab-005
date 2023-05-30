@@ -3,7 +3,7 @@ const app = require("../server");
 const Student = require("../models/studentModel");
 const Lecturer = require("../models/lecturerModel");
 const Consultation = require("../models/consultationModel");
-
+const bcrypt = require('bcryptjs')
 const mailer = require("../controllers/emailController");
 const nodemailer = require("nodemailer");
 
@@ -713,21 +713,11 @@ describe("Lecturer cancelConsultation", () => {
 
 
 
-jest.mock('nodemailer');
 
-describe('sendEmail function', () => {
-  let consoleLogSpy;
-  let consoleErrorSpy;
-
-  beforeEach(() => {
-    consoleLogSpy = jest.spyOn(console, 'log');
-    consoleErrorSpy = jest.spyOn(console, 'error');
-  });
- 
-  expect(savedConsultation).not.toBeNull();
-});
 // Import necessary dependencies and modules
 const { editConsultation } = require("../controllers/consultationController");
+
+
 
 describe("editConsultation", () => {
   // Mock request and response objects
@@ -828,6 +818,15 @@ describe("editConsultation", () => {
   });
 });
 
+describe("sendEmail", () => {
+  let consoleLogSpy;
+  let consoleErrorSpy;
+
+  beforeEach(() => {
+    consoleLogSpy = jest.spyOn(console, "log");
+    consoleErrorSpy = jest.spyOn(console, "error");
+  });
+
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -840,7 +839,7 @@ describe("editConsultation", () => {
       sendMail: jest.fn().mockResolvedValueOnce(),
     };
 
-    nodemailer.createTransport.mockReturnValue(transporterMock);
+    nodemailer.createTransport = jest.fn().mockReturnValue(transporterMock);
 
     await mailer.sendEmail(recipientEmail, message);
 
@@ -870,7 +869,7 @@ describe("editConsultation", () => {
       sendMail: jest.fn().mockRejectedValueOnce(new Error('Some error')),
     };
 
-    nodemailer.createTransport.mockReturnValue(transporterMock);
+    nodemailer.createTransport = jest.fn().mockReturnValue(transporterMock);
 
     await mailer.sendEmail(recipientEmail, message);
 
@@ -894,6 +893,4 @@ describe("editConsultation", () => {
       expect.any(Error)
     );
   });
-});
-
 });
