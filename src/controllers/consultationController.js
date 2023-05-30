@@ -271,6 +271,35 @@ exports.editConsultation = async (req, res) => {
   }
 };
 
+
+// Controller method for updating consultation information
+exports.editConsultation = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { day, startTime, endTime } = req.body;
+
+    // Find the consultation by ID
+    const consultation = await Consultation.findById(id);
+
+    if (!consultation) {
+      return res.status(404).json({ error: "Consultation not found" });
+    }
+
+    // Update consultation details
+    consultation.day = day;
+    consultation.startTime = startTime;
+    consultation.endTime = endTime;
+
+    // Save the updated consultation
+    await consultation.save();
+
+    // Redirect to lecturer dashboard
+    return res.redirect("/lecturer-dashboard");
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Failed to update consultation" });
+  }
+};
 // Controller for consultation cancellation
 exports.cancelConsultationLec = async (req, res) => {
   try {
