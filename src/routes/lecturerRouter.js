@@ -46,10 +46,10 @@ module.exports = router;
 // Render the sign-up form
 
 //Render password reset form
-router.get("/reset-password", lecturerController.getResetForm);
+router.get("/reset-password-lecturer", lecturerController.getResetForm);
 
 // Handle the password reset form submission
-router.post("/reset-password", lecturerController.resetPassword);
+router.post("/reset-password-lecturer", lecturerController.resetPassword);
 
 router.get("/resetpassword-lecturer/:userId", lecturerController.resetPasswordForm);
 
