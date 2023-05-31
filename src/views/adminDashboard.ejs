@@ -18,7 +18,27 @@
       padding: 10px;
       border: 1px solid #ddd;
     }
+    .delete-button {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
   </style>
+  <script>
+    function deleteLecturer(id) {
+      fetch(`/lecturer/${id}`, { method: 'DELETE' })
+        .then(res => location.reload())
+        .catch(err => console.error(err));
+    }
+
+    function deleteStudent(id) {
+      fetch(`/student/${id}`, { method: 'DELETE' })
+        .then(res => location.reload())
+        .catch(err => console.error(err));
+    }
+  </script>
 </head>
 <body>
   <div class="container">
@@ -30,6 +50,7 @@
         <li class="list-item">
           <h3><%= lecturer.name %></h3>
           <p>Email: <%= lecturer.email %></p>
+          <button class="delete-button" onclick="deleteLecturer('<%= lecturer._id %>')">Delete</button>
         </li>
       <% }) %>
     </ul>
@@ -40,6 +61,7 @@
         <li class="list-item">
           <h3><%= student.name %></h3>
           <p>Email: <%= student.email %></p>
+          <button class="delete-button" onclick="deleteStudent('<%= student._id %>')">Delete</button>
         </li>
       <% }) %>
     </ul>

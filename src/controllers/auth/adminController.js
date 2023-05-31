@@ -63,3 +63,38 @@ exports.getDashboard = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
+
+// controllers/adminController.js
+
+// ...
+
+exports.deleteLecturer = async (req, res) => {
+    try {
+      const result = await Lecturer.deleteOne({ _id: req.params.id });
+  
+      if (result.deletedCount === 0) {
+        return res.status(404).json({ msg: 'Lecturer not found' });
+      }
+  
+      res.json({ msg: 'Lecturer removed' });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  };
+  
+  exports.deleteStudent = async (req, res) => {
+    try {
+      const result = await Student.deleteOne({ _id: req.params.id });
+  
+      if (result.deletedCount === 0) {
+        return res.status(404).json({ msg: 'Student not found' });
+      }
+  
+      res.json({ msg: 'Student removed' });
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server Error');
+    }
+  };
+  
