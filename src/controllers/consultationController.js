@@ -25,56 +25,23 @@ exports.createConsultation = async (req, res) => {
     }
 
     let slotFound = false;
-    let overlappingAttendees = [];
 
-    lecturer.availability.forEach(async (availability) => {
+    lecturer.availability.forEach((availability) => {
       if (availability.day === day) {
         console.log("day found");
-        for (const slot of availability.slots) {
+        availability.slots.forEach((slot) => {
           console.log(slot.startTime);
           if (slot.startTime === startTime && slot.endTime === endTime) {
-            slotFound = true;
             slot.isBook = true;
-
-            // Find overlapping consultations for the given slot
-            const overlappingConsultations = await Consultation.find({
-              day,
-              startTime,
-              endTime,
-              attendees: { $in: attendees },
-            });
-
-            if (overlappingConsultations.length > 0) {
-              overlappingAttendees = overlappingConsultations.map(
-                (consultation) =>
-                  consultation.attendees.filter((attendee) =>
-                    attendees.includes(attendee)
-                  )
-              );
-            }
+            slotFound = true;
           }
-        }
+        });
       }
     });
 
     if (!slotFound) {
       console.log("Error: Slot not found or already booked");
       req.flash("error", "Failed to book slot");
-      return res.redirect("/see-lecturer-availability");
-    }
-
-    if (overlappingAttendees.length > 0) {
-      const overlappingAttendeesList = overlappingAttendees.flat();
-      console.log(
-        "Error: Overlapping consultation for attendees",
-        overlappingAttendeesList
-      );
-      req.flash(
-        "error",
-        `Overlapping consultation for attendees: ${overlappingAttendeesList.join(
-          ", "
-        )}`
-      );
       return res.redirect("/see-lecturer-availability");
     }
 
@@ -185,19 +152,13 @@ exports.getAllConsultations = async (req, res) => {
 exports.cancelConsultation = async (req, res) => {
   try {
     const { id } = req.params;
-    const consultation = Consultation.findById(id)
-    const oldTime = consultation.startTime 
-    const day = consultation.day
 
-    const recipient = consultation.lecturerEmail
-   
     // Find the consultation by ID and remove it
     await Consultation.findByIdAndRemove(id);
-    
-    const message = 'Your consultation on ' + day + ' at ' + oldTime + ' has been  cancelled'
 
 
-    mailer.sendEmail(recipient, message);
+
+    mailer.sendEmail(consultation.lecturerEmail, message);
 
     // Redirect to the student dashboard or any other desired page
     res.redirect("/student-dashboard");
@@ -330,21 +291,9 @@ exports.cancelConsultationLec = async (req, res) => {
   try {
     const { id } = req.params;
     const consultation = Consultation.findById(id)
-
-    const oldTime = consultation.startTime 
-    const day = consultation.day
-    const students =  consultation.attendees
     // Find the consultation by ID and remove it
     await Consultation.findByIdAndRemove(id);
 
-   
-    const message = 'Your consultation on ' + day + ' at ' + oldTime + ' has been cancelled'
-
-  
-
-    for(i =0; i < students.length; i++){
-      mailer.sendEmail(students[i], message);
-    }
     // Redirect to the student dashboard or any other desired page
     res.redirect("/lecturer-dashboard");
   } catch (error) {
