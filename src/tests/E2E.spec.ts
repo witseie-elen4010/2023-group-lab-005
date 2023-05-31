@@ -94,7 +94,7 @@ test('student can sign-in', async ({ page }) => {
   await page.locator('div:nth-child(2) > .card > .card-body > .mt-5 > .btn').click();
  });
 
- test('user can sign out', async ({ page }) => {
+ test('Lecturer can sign out', async ({ page }) => {
 await page.goto('https://consultify.azurewebsites.net/');
 await page.getByRole('button', { name: 'Sign in' }).click();
 await page.getByRole('link', { name: 'Lecturer' }).click();
@@ -107,7 +107,20 @@ await page.getByRole('button', { name: '' }).click();
 await page.getByRole('link', { name: ' Sign out' }).click();
  });
 
- test('user can look at their logs', async ({ page }) => {
+ test('Student sign out', async ({ page }) => {
+await page.goto('https://consultify.azurewebsites.net/');
+await page.getByRole('button', { name: 'Sign in' }).click();
+await page.getByRole('link', { name: 'Student' }).click();
+await page.getByPlaceholder('Email').click();
+await page.getByPlaceholder('Email').fill('studentTest@students.wits.ac.za');
+await page.getByPlaceholder('Password').click();
+await page.getByPlaceholder('Password').fill('P@ssword');
+await page.getByRole('main').getByRole('button', { name: 'Sign in' }).click();
+await page.getByRole('button', { name: '' }).click();
+await page.getByRole('link', { name: ' Sign out' }).click();
+   });
+
+ test('Lecturer can look at their logs', async ({ page }) => {
 await page.goto('https://consultify.azurewebsites.net/');
 await page.getByRole('button', { name: 'Sign in' }).click();
 await page.getByRole('link', { name: 'Lecturer' }).click();
@@ -119,3 +132,16 @@ await page.getByRole('main').getByRole('button', { name: 'Sign in' }).click();
 await page.getByRole('button', { name: '' }).click();
 await page.getByRole('link', { name: ' View logs' }).click();
    });
+
+  test('Student can look at their logs', async ({ page }) => {
+await page.goto('https://consultify.azurewebsites.net/');
+await page.getByRole('button', { name: 'Sign in' }).click();
+await page.getByRole('link', { name: 'Student' }).click();
+await page.getByPlaceholder('Email').click();
+await page.getByPlaceholder('Email').fill('studentTest@students.wits.ac.za');
+await page.getByPlaceholder('Password').click();
+await page.getByPlaceholder('Password').fill('P@ssword');
+await page.getByRole('main').getByRole('button', { name: 'Sign in' }).click();
+await page.getByRole('button', { name: '' }).click();
+await page.getByRole('link', { name: ' View logs' }).click();
+  });
