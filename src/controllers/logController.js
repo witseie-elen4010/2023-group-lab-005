@@ -32,6 +32,21 @@ exports.viewLogs = async (req, res) => {
   }
 };
 
+exports.viewLogsLec = async (req, res) => {
+  try {
+    const { name } = req.session;
+
+    // Fetch logs with the specified name as the initiator
+    const logs = await Log.find({ initiator: name }).sort({ timestamp: -1 });
+
+    // Render the view with the logs data
+    res.render("viewLec", { logs });
+  } catch (err) {
+    console.error(err);
+    res.status(500).render("error", { errorMessage: "Server error" });
+  }
+};
+
 
 exports.viewAllLogs = async (req, res) => {
   try {

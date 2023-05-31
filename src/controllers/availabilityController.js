@@ -52,7 +52,7 @@ exports.postLecturerAvailabilityForm = async (req, res) => {
 
     // Save the changes to the database
     await lecturer.save();
-
+    logger.logAction("Availaibilty setting", lecturer.name)
     // Redirect back to the dashboard
     res.redirect("/set-lecturer-availability");
   } catch (err) {
