@@ -40,7 +40,7 @@ exports.postAdminSignIn = async (req, res) => {
       req.session.email = adminEmail;
   
       // Redirect to the admin dashboard page
-      res.redirect('/lecturer-dashboard');
+      res.redirect('/admin-dashboard');
     } catch (err) {
       console.error(err);
       res.status(500).render('error', { errorMessage: 'Server error' });

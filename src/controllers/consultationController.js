@@ -2,6 +2,7 @@ const Consultation = require("../models/consultationModel");
 const Lecturer = require("../models/lecturerModel");
 const Student = require("../models/studentModel");
 const mailer = require("./emailController");
+const logger = require("../controllers/logController");
 // Controller method for rendering the consultation setup view
 exports.renderConsultationSetup = (req, res) => {
   // Render the consultation setup view
@@ -64,6 +65,7 @@ exports.createConsultation = async (req, res) => {
 
     // Save the consultation to the database
     await consultation.save();
+    logger.logAction("Consultation creation", lecturerEmail)
     console.log("Consultation has been set up successfully");
     req.flash("success", "Consultation has been set up successfully");
   } catch (err) {
@@ -152,13 +154,20 @@ exports.getAllConsultations = async (req, res) => {
 exports.cancelConsultation = async (req, res) => {
   try {
     const { id } = req.params;
+    const consultation = await Consultation.findById(id);
+
+    const oldTime = consultation.startTime;
+    const day = consultation.day;
+    const lecturer = consultation.lecturerEmail;
 
     // Find the consultation by ID and remove it
     await Consultation.findByIdAndRemove(id);
 
+    const message = `Your consultation on ${day} at ${oldTime} has been cancelled`;
 
-
-    mailer.sendEmail(consultation.lecturerEmail, message);
+   
+    await mailer.sendEmail(lecturer, message);
+    logger.logAction("Consultation cancellation", lecturer)
 
     // Redirect to the student dashboard or any other desired page
     res.redirect("/student-dashboard");
@@ -202,6 +211,7 @@ exports.joinConsultation = async (req, res) => {
 
     // Save the updated consultation
     await consultation.save();
+    logger.logAction("Consultation joining", userEmail)
     console.log("User joined the consultation successfully");
     req.flash("success", "You have joined the consultation successfully");
 
@@ -273,7 +283,7 @@ exports.editConsultation = async (req, res) => {
     // Save the updated consultation
     await consultation.save();
 
-   
+    logger.logAction("Consultation reschedule", consultation.lecturerEmail)
 
     for(i =0; i < consultation.attendees.length; i++){
       mailer.sendEmail(consultation.attendees[i], message);
@@ -287,12 +297,24 @@ exports.editConsultation = async (req, res) => {
   }
 };
 // Controller for consultation cancellation
+// Controller for consultation cancellation
 exports.cancelConsultationLec = async (req, res) => {
   try {
     const { id } = req.params;
-    const consultation = Consultation.findById(id)
+    const consultation = await Consultation.findById(id);
+
+    const oldTime = consultation.startTime;
+    const day = consultation.day;
+    const students = consultation.attendees;
+
     // Find the consultation by ID and remove it
     await Consultation.findByIdAndRemove(id);
+
+    const message = `Your consultation on ${day} at ${oldTime} has been cancelled`;
+
+    for (let i = 0; i < students.length; i++) {
+      await mailer.sendEmail(students[i], message);
+    }
 
     // Redirect to the student dashboard or any other desired page
     res.redirect("/lecturer-dashboard");
