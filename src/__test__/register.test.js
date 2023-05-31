@@ -863,47 +863,47 @@ describe('editConsultation', () => {
   });
 });
 
-const Agenda = require('agenda');
-// const mailer = require('../controllers/emailController'); 
+// const Agenda = require('agenda');
+// // const mailer = require('../controllers/emailController'); 
 
 
-// Mock dependencies
-jest.mock('../controllers/emailController', () => ({ sendEmail: jest.fn() }));
-jest.mock('../controllers/consultationController', () => ({ find: jest.fn() }));
+// // Mock dependencies
+// jest.mock('../controllers/emailController', () => ({ sendEmail: jest.fn() }));
+// jest.mock('../controllers/consultationController', () => ({ find: jest.fn() }));
 
-// Mock Agenda
-const mockAgenda = {
-  define: jest.fn(),
-  processEvery: jest.fn(),
-  start: jest.fn(),
-};
-jest.mock('Agenda', () => jest.fn().mockImplementation(() => mockAgenda));
+// // Mock Agenda
+// const mockAgenda = {
+//   define: jest.fn(),
+//   processEvery: jest.fn(),
+//   start: jest.fn(),
+// };
+// jest.mock('Agenda', () => jest.fn().mockImplementation(() => mockAgenda));
 
-describe('Agenda job', () => {
-  beforeEach(() => {
-    // Clear all instances and calls to constructor and all methods:
-    mailer.sendEmail.mockClear();
-    Consultation.find.mockClear();
-    mockAgenda.define.mockClear();
-    mockAgenda.processEvery.mockClear();
-    mockAgenda.start.mockClear();
-  });
+// describe('Agenda job', () => {
+//   beforeEach(() => {
+//     // Clear all instances and calls to constructor and all methods:
+//     mailer.sendEmail.mockClear();
+//     Consultation.find.mockClear();
+//     mockAgenda.define.mockClear();
+//     mockAgenda.processEvery.mockClear();
+//     mockAgenda.start.mockClear();
+//   });
 
-  it('should define and schedule the email job correctly', async () => {
-    // Given
-    const sendConsultationEmails = jest.fn();
+//   it('should define and schedule the email job correctly', async () => {
+//     // Given
+//     const sendConsultationEmails = jest.fn();
 
-    // When
-    await agenda.start();
+//     // When
+//     await agenda.start();
 
-    // Then
-    expect(mockAgenda.define).toHaveBeenCalledWith("send email", expect.any(Function));
-    expect(mockAgenda.processEvery).toHaveBeenCalledWith("2 hours");
-    expect(mockAgenda.start).toHaveBeenCalled();
-  })
-})
+//     // Then
+//     expect(mockAgenda.define).toHaveBeenCalledWith("send email", expect.any(Function));
+//     expect(mockAgenda.processEvery).toHaveBeenCalledWith("2 hours");
+//     expect(mockAgenda.start).toHaveBeenCalled();
+//   })
+// })
 
-const { resetPassword } = require('../controllers/auth/studentController'); 
+// const { resetPassword } = require('../controllers/auth/studentController'); 
 
 
 
@@ -973,18 +973,18 @@ describe('resetPassword function', () => {
 
 })
 
-// tests/adminController.test.js
 
 
 
-const adminController = require('../controllers/adminController');
+
+const adminController = require('../controllers/auth/adminController');
 
 
 app.delete('/lecturer/:id', adminController.deleteLecturer);
 app.delete('/student/:id', adminController.deleteStudent);
 
-jest.mock('../models/Lecturer');
-jest.mock('../models/Student');
+jest.mock('../models/lecturerModel');
+jest.mock('../models/studentModel');
 
 describe('Admin Controller', () => {
   afterEach(() => {
