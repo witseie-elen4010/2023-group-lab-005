@@ -22,4 +22,16 @@ router.post(
   consultationController.cancelConsultation
 );
 
+
+// Route to handle the POST request for updating the consultation
+router.post("/edit-consultation/:id", consultationController.editConsultation);
+
+router.get("/lecturer-dashboard", consultationController.getUpcomingConsultations)
+
+// Route for consultation cancellation
+router.post(
+  "/cancel-consultationLec/:id",
+  consultationController.cancelConsultationLec
+);
+
 module.exports = router;

@@ -23,7 +23,7 @@
                   class="text-center"
                   style="color: #aaa; font-weight: 300; font-size: small"
                 >
-                  <%= AttendedLecturerMap[consultation.lecturerEmail] %>
+                  <%= attendedLecturerMap[consultation.lecturerEmail] %>
                 </p>
               </div>
               <div class="card-body">
@@ -61,59 +61,63 @@
       </div>
     </div>
 
-    <div class="col-12 col-md-6 col-sm-12">
-      <div class="container">
-        <h5>Other Consultations you can join</h5>
-        <div class="row">
-          <% notAttendedConsultations.forEach((consultation) => { %>
-          <div class="col-md-5 mb-4">
-            <div class="card">
-              <div
-                class="card-header"
-                style="background-color: #031a39; color: #ffab06"
-              >
-                <p class="card-title text-center" style="font-weight: bold">
-                  Meeting With
-                </p>
-                <p
-                  class="text-center"
-                  style="color: #aaa; font-weight: 300; font-size: small"
-                >
-                  <%= notAttendedLecturerMap[consultation.lecturerEmail] %>
-                </p>
-              </div>
-              <div class="card-body">
-                <p
-                  class="card-text"
-                  style="color: #aaa; font-weight: 300; font-size: small"
-                >
-                  <%= consultation.attendees.length %> students
-                </p>
-                <%= consultation.day %>
+      <div class="col-12 col-md-6 col-sm-12">
+        <div class="container mt-5">
+          <h5>Other Consultations you can join</h5>
+          <div class="row">
+            <% notAttendedConsultations.forEach((consultation) => { %>
+            <div class="col-md-8 mb-4">
+              <div class="card">
                 <div
-                  class="card-text mt-2 mb-1"
-                  style="color: #aaa; font-weight: 300; font-size: small"
+                  class="card-header"
+                  style="background-color: #031a39; color: #ffab06"
                 >
-                  <%= consultation.startTime %> till <%= consultation.endTime %>
-                </div>
-                <form
-                  action="/join-consultation/<%= consultation._id %>"
-                  method="POST"
-                >
-                  <button
-                    type="submit"
-                    class="btn btn-warning leave-btn"
-                    style="width: 100%"
+                  <p class="card-title text-center" style="font-weight: bold">
+                    Meeting With
+                  </p>
+                  <p
+                    class="text-center"
+                    style="color: #aaa; font-weight: 300; font-size: small"
                   >
-                    Join
-                  </button>
-                </form>
+                    <%= notAttendedLecturerMap[consultation.lecturerEmail] %>
+                  </p>
+                </div>
+                <div class="card-body">
+                  <p
+                    class="card-text"
+                    style="color: #aaa; font-weight: 300; font-size: small"
+                  >
+                    <i class="fa-solid fa-user-group"></i> <%=
+                    consultation.attendees.length %> students
+                  </p>
+                  <i class="fa-regular fa-calendar"></i> <%= consultation.day %>
+                  <div
+                    class="card-text mt-2 mb-1"
+                    style="color: #aaa; font-weight: 300; font-size: small"
+                  >
+                    <i class="fa-regular fa-clock"></i> <%=
+                    consultation.startTime %> till <%= consultation.endTime %>
+                  </div>
+                  <form
+                    action="/join-consultation/<%= consultation._id %>"
+                    method="POST"
+                    class="mt-5"
+                  >
+                    <button
+                      type="submit"
+                      class="btn btn-warning leave-btn"
+                      style="width: 100%"
+                    >
+                      Join
+                    </button>
+                  </form>
+                </div>
               </div>
             </div>
+            <% }); %>
           </div>
-          <% }); %>
         </div>
       </div>
     </div>
-  </div>
-</main>
+  </main>
+</div>

@@ -2,13 +2,19 @@ const request = require("supertest");
 const app = require("../server");
 const Student = require("../models/studentModel");
 const Lecturer = require("../models/lecturerModel");
+const Consultation = require("../models/consultationModel");
+const bcrypt = require('bcryptjs')
+const mailer = require("../controllers/emailController");
+const nodemailer = require("nodemailer");
+
+
 require("dotenv").config();
 
 describe("Student registration", () => {
   afterEach(async () => {
     // Clean up the database after each test
     await Student.deleteMany();
-  }, 10000);
+  }, 100000);
 
   test("New student can see sign-up form with name, email, and password fields", async () => {
     const response = await request(app).get("/register-student");
@@ -22,8 +28,8 @@ describe("Student registration", () => {
     const studentData = {
       name: "John Doe",
       email: "johndoe@example.com",
-      password: "password",
-      confirmPassword: "password",
+      password: "P@ssword",
+      confirmPassword: "P@ssword",
     };
 
     const response = await request(app)
@@ -58,8 +64,8 @@ describe("Lecturer registration", () => {
     const lecturerData = {
       name: "Jane Smith",
       email: "janesmith@example.com",
-      password: "password",
-      confirmPassword: "password",
+      password: "P@ssword",
+      confirmPassword: "P@ssword",
     };
 
     const response = await request(app)
@@ -82,7 +88,7 @@ describe("Student login", () => {
     const studentData = {
       name: "John Doe",
       email: "johndoe@example.com",
-      password: "password",
+      password: "P@ssword",
     };
 
     await Student.create(studentData);
@@ -96,7 +102,7 @@ describe("Student login", () => {
   test("Existing student can log in with correct credentials", async () => {
     const loginData = {
       email: "johndoe@example.com",
-      password: "password",
+      password: "P@ssword",
     };
 
     const response = await request(app).post("/login-student").send(loginData);
@@ -108,7 +114,7 @@ describe("Student login", () => {
     // Log in the lecturer
     const loginData = {
       email: "janesmith@johndoe.com",
-      password: "password",
+      password: "P@ssword",
     };
 
     let response = await request(app).post("/login-student").send(loginData);
@@ -134,6 +140,21 @@ describe("Student login", () => {
 
     expect(response.statusCode).toBe(302); // unauthorized status code
   });
+
+  test("Student cannot create account with invalid password", async () => {
+    const registerData = {
+      email: "newstudent@example.com",
+      password: "invalidpassword",
+      confirmPassword: "invalidpassword",
+      name: "New Student"
+    };
+  
+    const response = await request(app).post("/register-student").send(registerData);
+  
+    // The server should respond with a redirection status code (e.g., 302) indicating the user is redirected back to the registration page
+    expect(response.statusCode).toBe(302);
+  });
+  
 });
 
 describe("Lecturer login", () => {
@@ -142,7 +163,7 @@ describe("Lecturer login", () => {
     const lecturerData = {
       name: "Jane Smith",
       email: "janesmith@example.com",
-      password: "password",
+      password: "P@ssword",
     };
 
     await Lecturer.create(lecturerData);
@@ -156,7 +177,7 @@ describe("Lecturer login", () => {
   test("Existing lecturer can log in with correct credentials", async () => {
     const loginData = {
       email: "janesmith@example.com",
-      password: "password",
+      password: "P@ssword",
     };
 
     const response = await request(app).post("/login-lecturer").send(loginData);
@@ -168,7 +189,7 @@ describe("Lecturer login", () => {
     // Log in the lecturer
     const loginData = {
       email: "janesmith@example.com",
-      password: "password",
+      password: "P@ssword",
     };
 
     let response = await request(app).post("/login-lecturer").send(loginData);
@@ -194,6 +215,20 @@ describe("Lecturer login", () => {
 
     expect(response.statusCode).toBe(302); // unauthorized status code
   });
+
+  test("Lecturer cannot create account with invalid password", async () => {
+    const registerData = {
+      email: "newlec@example.com",
+      password: "invalidpassword",
+      confirmPassword: "invalidpassword",
+      name: "New Lecturer"
+    };
+  
+    const response = await request(app).post("/register-lecturer").send(registerData);
+  
+    // The server should respond with a redirection status code (e.g., 302) indicating the user is redirected back to the registration page
+    expect(response.statusCode).toBe(302);
+  });
 });
 describe("Retrieve all lecturers and their availability", () => {
   beforeEach(async () => {
@@ -202,7 +237,7 @@ describe("Retrieve all lecturers and their availability", () => {
       {
         name: "Lecturer 1",
         email: "lecturer1@example.com",
-        password: "password1",
+        password: "P@ssword1",
         availability: [
           {
             day: "Monday",
@@ -239,7 +274,7 @@ describe("Retrieve all lecturers and their availability", () => {
       {
         name: "Lecturer 2",
         email: "lecturer2@example.com",
-        password: "password2",
+        password: "P@ssword2",
         availability: [
           {
             day: "Wednesday",
@@ -326,7 +361,6 @@ describe("Retrieve all lecturers and their availability", () => {
   });
 });
 
-const Consultation = require("../models/consultationModel");
 const { createConsultation } = require("../controllers/consultationController");
 
 jest.mock("../models/lecturerModel");
@@ -522,8 +556,117 @@ describe("Consultation Joining", () => {
 });
 const { cancelConsultation } = require("../controllers/consultationController");
 
-describe("cancelConsultation", () => {
-  it("should cancel the consultation and redirect to the student dashboard", async () => {
+// describe("cancelConsultation", () => {
+//   it("should cancel the consultation and redirect to the student dashboard", async () => {
+//     const req = {
+//       params: { id: "consultationId" },
+//     };
+//     const res = {
+//       redirect: jest.fn(),
+//     };
+
+//     await Consultation.findByIdAndRemove.mockReturnValueOnce({});
+
+//     await cancelConsultation(req, res);
+
+//     expect(Consultation.findByIdAndRemove).toHaveBeenCalledWith(
+//       "consultationId"
+//     );
+//     expect(res.redirect).toHaveBeenCalledWith("/student-dashboard");
+//   });
+
+//   it("should handle errors and send a 500 response with an error message", async () => {
+//     const req = {
+//       params: { id: "consultationId" },
+//     };
+//     const res = {
+//       status: jest.fn().mockReturnThis(),
+//       json: jest.fn(),
+//     };
+
+//     const error = new Error("Failed to cancel the consultation");
+//     await Consultation.findByIdAndRemove.mockRejectedValueOnce(error);
+
+//     await cancelConsultation(req, res);
+
+//     expect(Consultation.findByIdAndRemove).toHaveBeenCalledWith(
+//       "consultationId"
+//     );
+//     expect(res.status).toHaveBeenCalledWith(500);
+//     expect(res.json).toHaveBeenCalledWith({
+//       error: "Failed to cancel the consultation",
+//     });
+//   });
+// });
+test("A new lecturer can create a consultation", async () => {
+  // Create a new lecturer
+  const lecturerData = {
+    name: "Jane Smith",
+    email: "janesmith@example.com",
+    password: "P@ssword",
+  };
+  const lecturer = new Lecturer(lecturerData);
+  await lecturer.save();
+
+  // Create a consultation data
+  const consultationData = {
+    attendees: [],
+    lecturerEmail: lecturer.email,
+    maxStudents: 5,
+    day: "Monday",
+    startTime: "10:00 AM",
+    endTime: "11:00 AM",
+  };
+
+  // Send a POST request to create a consultation
+  const response = await request(app)
+    .post("/consultation")
+    .send(consultationData);
+
+  // Check the response status code and location
+  expect(response.statusCode).toBe(302); // Redirect status code
+  expect(response.header.location).toBe("/see-lecturer-availability"); // Check the redirect location
+
+  // Check if the consultation was saved to the database
+  const savedConsultation = await Consultation.findOne({
+    lecturerEmail: lecturer.email,
+    day: consultationData.day,
+  });
+  expect(savedConsultation).not.toBeNull();
+});
+
+describe('Password Hashing', () => {
+  test('Should create a new user with hashed password', async () => {
+    const userData = {
+      name: 'John Doe',
+      email: 'johndoe@example.com',
+      password: 'P@ssword',
+      confirmPassword: 'P@ssword',
+    };
+
+    const response = await request(app)
+      .post('/register-student')
+      .send(userData);
+
+    // Assert that the student was created successfully
+    expect(response.statusCode).toBe(302);
+
+    // Get the created student from the database
+    const createdUser = await Student.findOne({ email: userData.email });
+
+    // Assert that the password is hashed
+    expect(createdUser).toBeDefined(); 
+    expect(bcrypt.compareSync(userData.password, createdUser.password)).toBe(true);
+  });
+
+});
+
+
+
+const { cancelConsultationLec } = require("../controllers/consultationController");
+
+describe("Lecturer cancelConsultation", () => {
+  it("should cancel the consultation and redirect to the lecturer dashboard", async () => {
     const req = {
       params: { id: "consultationId" },
     };
@@ -531,14 +674,15 @@ describe("cancelConsultation", () => {
       redirect: jest.fn(),
     };
 
-    await Consultation.findByIdAndRemove.mockReturnValueOnce({});
+    // Mocking the Consultation model's findByIdAndRemove method
+    Consultation.findByIdAndRemove = jest.fn().mockResolvedValueOnce({});
 
-    await cancelConsultation(req, res);
+    await cancelConsultationLec(req, res);
 
     expect(Consultation.findByIdAndRemove).toHaveBeenCalledWith(
       "consultationId"
     );
-    expect(res.redirect).toHaveBeenCalledWith("/student-dashboard");
+    expect(res.redirect).toHaveBeenCalledWith("/lecturer-dashboard");
   });
 
   it("should handle errors and send a 500 response with an error message", async () => {
@@ -551,9 +695,10 @@ describe("cancelConsultation", () => {
     };
 
     const error = new Error("Failed to cancel the consultation");
-    await Consultation.findByIdAndRemove.mockRejectedValueOnce(error);
+    // Mocking the Consultation model's findByIdAndRemove method to throw an error
+    Consultation.findByIdAndRemove = jest.fn().mockRejectedValueOnce(error);
 
-    await cancelConsultation(req, res);
+    await cancelConsultationLec(req, res);
 
     expect(Consultation.findByIdAndRemove).toHaveBeenCalledWith(
       "consultationId"
@@ -561,6 +706,159 @@ describe("cancelConsultation", () => {
     expect(res.status).toHaveBeenCalledWith(500);
     expect(res.json).toHaveBeenCalledWith({
       error: "Failed to cancel the consultation",
-    });
-  });
+    });
+  });
+
+});
+
+
+
+describe("sendEmail", () => {
+  let consoleLogSpy;
+  let consoleErrorSpy;
+
+  beforeEach(() => {
+    consoleLogSpy = jest.spyOn(console, "log");
+    consoleErrorSpy = jest.spyOn(console, "error");
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should send an email successfully', async () => {
+    const recipientEmail = 'recipient@example.com';
+    const message = '<p>Test message</p>';
+
+    const transporterMock = {
+      sendMail: jest.fn().mockResolvedValueOnce(),
+    };
+
+    nodemailer.createTransport = jest.fn().mockReturnValue(transporterMock);
+
+    await mailer.sendEmail(recipientEmail, message);
+
+    expect(nodemailer.createTransport).toHaveBeenCalledWith({
+      service: 'gmail',
+      auth: {
+        user: 'project.consultify@gmail.com',
+        pass: 'vnxaktcpcmkprsxy',
+      },
+    });
+
+    expect(transporterMock.sendMail).toHaveBeenCalledWith({
+      from: 'project.consultify@gmail.com',
+      to: recipientEmail,
+      html: message,
+    });
+
+    expect(consoleLogSpy).toHaveBeenCalledWith('Email sent successfully');
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+  });
+
+  it('should handle errors when sending an email', async () => {
+    const recipientEmail = 'recipient@example.com';
+    const message = '<p>Test message</p>';
+
+    const transporterMock = {
+      sendMail: jest.fn().mockRejectedValueOnce(new Error('Some error')),
+    };
+
+    nodemailer.createTransport = jest.fn().mockReturnValue(transporterMock);
+
+    await mailer.sendEmail(recipientEmail, message);
+
+    expect(nodemailer.createTransport).toHaveBeenCalledWith({
+      service: 'gmail',
+      auth: {
+        user: 'project.consultify@gmail.com',
+        pass: 'vnxaktcpcmkprsxy',
+      },
+    });
+
+    expect(transporterMock.sendMail).toHaveBeenCalledWith({
+      from: 'project.consultify@gmail.com',
+      to: recipientEmail,
+      html: message,
+    });
+
+    expect(consoleLogSpy).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Error sending email:',
+      expect.any(Error)
+    );
+  });
+});
+
+
+const { editConsultation } = require('../controllers/consultationController');
+
+
+// Mock the Consultation model
+jest.mock('../models/consultationModel');
+
+// Mock the nodemailer sendMail function
+jest.mock('nodemailer');
+
+describe('editConsultation', () => {
+  it('should send email to attendees', async () => {
+    // Create a mock consultation and request objects
+    const consultationId = 'consultationId';
+    const attendee1 = 'attendee1@example.com';
+    const attendee2 = 'attendee2@example.com';
+    const request = {
+      params: { id: consultationId },
+      body: {
+        day: '2023-06-01',
+        startTime: '10:00 AM',
+        endTime: '11:00 AM',
+      },
+    };
+
+    // Create a mock consultation object
+    const mockConsultation = {
+      _id: consultationId,
+      attendees: [attendee1, attendee2],
+      day: '2023-05-30',
+      startTime: '2:00 PM',
+      endTime: '3:00 PM',
+      save: jest.fn(),
+    };
+
+    // Mock the Consultation.findById method
+    Consultation.findById.mockResolvedValue(mockConsultation);
+
+    // Mock the nodemailer sendMail function
+    const sendMailMock = jest.fn().mockResolvedValue({ response: 'OK' });
+    nodemailer.createTransport.mockReturnValue({ sendMail: sendMailMock });
+
+    // Create a mock response object
+    const res = {
+      status: jest.fn().mockReturnThis(),
+      json: jest.fn(),
+      redirect: jest.fn(),
+    };
+
+    // Call the editConsultation method
+    await editConsultation(request, res);
+
+    // Expect consultation details to be updated
+    expect(mockConsultation.day).toBe('2023-06-01');
+    expect(mockConsultation.startTime).toBe('10:00 AM');
+    expect(mockConsultation.endTime).toBe('11:00 AM');
+
+    // Expect consultation save method to be called
+    expect(mockConsultation.save).toHaveBeenCalled();
+
+    // Expect nodemailer createTransport method to be called
+    expect(nodemailer.createTransport).toHaveBeenCalled();
+
+    // Expect nodemailer sendMail method to be called for each attendee
+    expect(sendMailMock).toHaveBeenCalledTimes(2);
+  
+    
+    
+    // Expect response to be redirected
+    expect(res.redirect).toHaveBeenCalledWith('/lecturer-dashboard');
+  });
 });

@@ -16,6 +16,8 @@ router.get("/login-student", studentController.getSignIn);
 // Handle the sign-in form submission
 router.post("/login-student", studentController.postSignIn);
 
+// Handle email verification
+// router.get("/verify-email/:token", studentController.verifyEmail);
 module.exports = router;
 
 //Render password reset form

@@ -1,5 +1,7 @@
 const Consultation = require("../models/consultationModel");
 const Lecturer = require("../models/lecturerModel");
+const Student = require("../models/studentModel");
+const mailer = require("./emailController");
 // Controller method for rendering the consultation setup view
 exports.renderConsultationSetup = (req, res) => {
   // Render the consultation setup view
@@ -154,6 +156,10 @@ exports.cancelConsultation = async (req, res) => {
     // Find the consultation by ID and remove it
     await Consultation.findByIdAndRemove(id);
 
+
+
+    mailer.sendEmail(consultation.lecturerEmail, message);
+
     // Redirect to the student dashboard or any other desired page
     res.redirect("/student-dashboard");
   } catch (error) {
@@ -204,5 +210,94 @@ exports.joinConsultation = async (req, res) => {
     console.log("Error: Failed to join consultation", err);
     req.flash("error", "Failed to join consultation");
     res.redirect("/see-lecturer-availability");
-  }
+  }
+};
+
+exports.getUpcomingConsultations = async (req, res) => {
+  try {
+    // Get the lecturer's email from the session
+    const lecturerEmail = req.session.email;
+
+    // Find all consultations where the lecturer's email matches
+    const upcomingConsultations = await Consultation.find({
+      lecturerEmail,
+    }).sort({ startTime: 1 }); // Sort consultations by ascending start time
+
+    // Get the names of the attendees for each consultation
+    const consultationsWithAttendeeNames = await Promise.all(
+      upcomingConsultations.map(async (consultation) => {
+        const attendees = consultation.attendees;
+        const attendeeNames = await Student.find(
+          { email: { $in: attendees } },
+          "name"
+        ).lean();
+        const names = attendeeNames.map((attendee) => attendee.name);
+        return { ...consultation.toObject(), attendeeNames: names };
+      })
+    );
+
+    res.render("lecturerDashboard", {
+      upcomingConsultations: consultationsWithAttendeeNames,
+      title: "All Consultations",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch consultations" });
+  }
+};
+
+
+
+// Controller method for updating consultation information
+exports.editConsultation = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { day, startTime, endTime } = req.body;
+
+    // Find the consultation by ID
+    const consultation = await Consultation.findById(id);
+
+    if (!consultation) {
+      return res.status(404).json({ error: "Consultation not found" });
+    }
+    const oldTime = consultation.startTime 
+    const message = 'Your consultation on ' + consultation.day + ' at ' + oldTime + ' has been changed. Login to check new date and time'
+
+    // Update consultation details
+    consultation.day = day;
+    consultation.startTime = startTime;
+    consultation.endTime = endTime;
+
+   
+    
+    // Save the updated consultation
+    await consultation.save();
+
+   
+
+    for(i =0; i < consultation.attendees.length; i++){
+      mailer.sendEmail(consultation.attendees[i], message);
+    }
+
+    // Redirect to lecturer dashboard
+    return res.redirect("/lecturer-dashboard");
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Failed to update consultation" });
+  }
+};
+// Controller for consultation cancellation
+exports.cancelConsultationLec = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const consultation = Consultation.findById(id)
+    // Find the consultation by ID and remove it
+    await Consultation.findByIdAndRemove(id);
+
+    // Redirect to the student dashboard or any other desired page
+    res.redirect("/lecturer-dashboard");
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to cancel the consultation" });
+  }
 };
