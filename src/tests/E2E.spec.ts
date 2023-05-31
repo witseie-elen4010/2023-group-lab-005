@@ -49,3 +49,14 @@ test('student can sign-in', async ({ page }) => {
   await page.getByPlaceholder('Password').fill('P@ssword');
   await page.getByRole('main').getByRole('button', { name: 'Sign in' }).click();
  });
+
+ test('Admin can sign-in', async ({ page }) => {
+  await page.goto('https://consultify.azurewebsites.net/');
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await page.getByRole('link', { name: 'Admin' }).click();
+  await page.getByPlaceholder('Email').click();
+  await page.getByPlaceholder('Email').fill('admin@gmail.com');
+  await page.getByPlaceholder('Password').click();
+  await page.getByPlaceholder('Password').fill('Adm!n123');
+  await page.getByRole('main').getByRole('button', { name: 'Sign in' }).click();
+ });
