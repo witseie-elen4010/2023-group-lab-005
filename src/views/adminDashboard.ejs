@@ -1,7 +1,7 @@
 <!-- views/dashboard.ejs -->
 
-<!DOCTYPE html>
-<html>
+
+<%- include('./Partials/inAppheaderAdmin');%>
 <head>
   <title>Admin Dashboard</title>
   <style>
@@ -42,24 +42,24 @@
 </head>
 <body>
   <div class="container">
-    <h1>Admin Dashboard</h1>
+   
 
-    <h2>Lecturers</h2>
+    <h4>Lecturers</h4>
     <ul class="list">
       <% lecturers.forEach(lecturer => { %>
         <li class="list-item">
-          <h3><%= lecturer.name %></h3>
+          <h6><%= lecturer.name %></h6>
           <p>Email: <%= lecturer.email %></p>
           <button class="delete-button" onclick="deleteLecturer('<%= lecturer._id %>')">Delete</button>
         </li>
       <% }) %>
     </ul>
 
-    <h2>Students</h2>
+    <h4>Students</h4>
     <ul class="list">
       <% students.forEach(student => { %>
         <li class="list-item">
-          <h3><%= student.name %></h3>
+          <h6><%= student.name %></h6>
           <p>Email: <%= student.email %></p>
           <button class="delete-button" onclick="deleteStudent('<%= student._id %>')">Delete</button>
         </li>
