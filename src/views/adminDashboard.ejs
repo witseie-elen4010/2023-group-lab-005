@@ -1,0 +1,70 @@
+<!-- views/dashboard.ejs -->
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <style>
+    .container {
+      width: 80%;
+      margin: auto;
+    }
+    .list {
+      list-style-type: none;
+      padding: 0;
+    }
+    .list-item {
+      margin: 10px 0;
+      padding: 10px;
+      border: 1px solid #ddd;
+    }
+    .delete-button {
+      background-color: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
+  <script>
+    function deleteLecturer(id) {
+      fetch(`/lecturer/${id}`, { method: 'DELETE' })
+        .then(res => location.reload())
+        .catch(err => console.error(err));
+    }
+
+    function deleteStudent(id) {
+      fetch(`/student/${id}`, { method: 'DELETE' })
+        .then(res => location.reload())
+        .catch(err => console.error(err));
+    }
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Admin Dashboard</h1>
+
+    <h2>Lecturers</h2>
+    <ul class="list">
+      <% lecturers.forEach(lecturer => { %>
+        <li class="list-item">
+          <h3><%= lecturer.name %></h3>
+          <p>Email: <%= lecturer.email %></p>
+          <button class="delete-button" onclick="deleteLecturer('<%= lecturer._id %>')">Delete</button>
+        </li>
+      <% }) %>
+    </ul>
+
+    <h2>Students</h2>
+    <ul class="list">
+      <% students.forEach(student => { %>
+        <li class="list-item">
+          <h3><%= student.name %></h3>
+          <p>Email: <%= student.email %></p>
+          <button class="delete-button" onclick="deleteStudent('<%= student._id %>')">Delete</button>
+        </li>
+      <% }) %>
+    </ul>
+  </div>
+</body>
+</html>
