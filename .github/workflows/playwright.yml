@@ -21,7 +21,7 @@ jobs:
       run:  npm install -D @playwright/test
     - name: Run Playwright tests
       env:
-        MONGO_URI: ${{ secrets.mongodb+srv://ChristinaMathipa:Tadiwa22@consultify.waxjz9e.mongodb.net/ }}
+        MONGO_URI: ${{secrets.MONGO_URI}}
       run: npx playwright test
     - uses: actions/upload-artifact@v3
       if: always()
