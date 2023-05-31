@@ -91,16 +91,15 @@ const sendConsultationEmails = async () => {
       const message = "Hello, This is a reminder of a meeting at " + consultation.startTime
 
       // Send email to lecturer
-      await sendEmail(lecturerEmail, message);
+      await mailer.sendEmail(lecturerEmail, message);
 
       // Send email to attendees
       for (const attendee of attendees) {
-        await sendEmail(attendee, message);
+        await mailer.sendEmail(attendee, message);
       }
     }
     
 
-    console.log("Emails sent successfully");
   } catch (err) {
     console.error("Error sending emails:", err);
   }
