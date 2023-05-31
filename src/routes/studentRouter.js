@@ -19,3 +19,13 @@ router.post("/login-student", studentController.postSignIn);
 // Handle email verification
 // router.get("/verify-email/:token", studentController.verifyEmail);
 module.exports = router;
+
+//Render password reset form
+router.get("/reset-password-student", studentController.getResetForm);
+
+// Handle the password reset form submission
+router.post("/reset-password-student", studentController.resetPassword);
+
+router.get("/resetpassword-student/:userId", studentController.resetPasswordForm);
+
+router.post("/resetpassword-student/:userId", studentController.newPassword);

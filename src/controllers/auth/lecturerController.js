@@ -110,3 +110,70 @@ exports.postSignIn = async (req, res) => {
 exports.signOut = (req, res) => {
   res.redirect("/");
 };
+
+exports.getResetForm = (req, res) => {
+  res.render("./auth/lecturer/resetPassword");
+};
+exports.resetPassword = async (req, res) => {
+  const { email } = req.body;
+
+  // Check if user with provided email exists
+  const lecturer = await lecturer.findOne({ email });
+
+  if (!lecturer) {
+    req.flash("error", "User with this email does not exist");
+    return res.status(401).redirect("/reset-password");
+  }
+  const message =
+    "Follow the link to reset password: " +
+    `https://consultify.azurewebsites.net/passwordreset${lecturer._id}`;
+  mailer.sendEmail(email, message);
+  req.flash("Success", "Check your email to reset password");
+  return res.status(200).redirect("/reset-password");
+};
+
+exports.resetPasswordForm = async (req, res) => {
+  const userId = req.params.userId;
+  res.render("./auth/lecturer/newPassword", { userId });
+};
+
+exports.newPassword = async (req, res) => {
+  const { userId } = req.params;
+  const { password, confirmPassword } = req.body;
+
+  // Validate if the passwords match
+  if (password !== confirmPassword) {
+    req.flash("error", "Passwords do not match");
+    return res.redirect(`/resetpassword/${userId}`);
+  }
+
+  const passwordRegEx = /^(?=.*[A-Z])(?=.*[!@#$&*]).{8,}$/;
+  if (!passwordRegEx.test(password)) {
+    req.flash(
+      "error",
+      "Password must be at least 8 characters, have at least 1 capital letter and 1 special character"
+    );
+    return res.redirect(`/resetpassword/${userId}`);
+  }
+
+  try {
+    // Find the user by their ID
+    const lecturer = await lecturer.findById(userId);
+
+    if (!lecturer) {
+      req.flash("error", "Invalid reset link");
+      return res.redirect("/reset-password");
+    }
+
+    // Set the new password
+    lecturer.password = bcrypt.hashSync(password);
+    await lecturer.save();
+
+    req.flash("success", "Password reset successfully");
+    return res.redirect("/lecturer-login");
+  } catch (err) {
+    console.error("Error resetting password:", err);
+    req.flash("error", "Failed to reset password");
+    return res.redirect(`/reset-password/${userId}`);
+  }
+};
