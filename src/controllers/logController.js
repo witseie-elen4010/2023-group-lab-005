@@ -31,3 +31,19 @@ exports.viewLogs = async (req, res) => {
     res.status(500).render("error", { errorMessage: "Server error" });
   }
 };
+
+
+exports.viewAllLogs = async (req, res) => {
+  try {
+    const { name } = req.session;
+
+    // Fetch logs with the specified name as the initiator
+    const logs = await Log.find();
+
+    // Render the view with the logs data
+    res.render("allLogs", { logs });
+  } catch (err) {
+    console.error(err);
+    res.status(500).render("error", { errorMessage: "Server error" });
+  }
+};

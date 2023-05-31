@@ -4,8 +4,7 @@ const logger = require("../controllers/logController");
 // Render the lecturer availability form
 exports.getLecturerAvailabilityForm = (req, res) => {
   res.render("SetLecturerAvailability", { title: "Lecturer Availability" });
-};
-// Handle the lecturer availability form submission
+};// Handle the lecturer availability form submission// Handle the lecturer availability form submission// Handle the lecturer availability form submission
 exports.postLecturerAvailabilityForm = async (req, res) => {
   const { day, start, end, maxStudents } = req.body;
   // Retrieve the token, ID, and email from the session
@@ -14,21 +13,32 @@ exports.postLecturerAvailabilityForm = async (req, res) => {
   try {
     // Find the lecturer by their ID
     const lecturer = await Lecturer.findById(lecturerId);
-    console.log(lecturer);
-
-    if (!lecturer) {
-      console.error(`No lecturer found with the id: ${lecturerId}`);
-      return res.status(500).render("error", { errorMessage: "No lecturer found" });
-    }
-    
-    // Make sure the lecturer has an 'availability' property
-    if (!lecturer.availability) {
-      console.error(`Lecturer with the id: ${lecturerId} has no 'availability' property`);
-      return res.status(500).render("error", { errorMessage: "Lecturer has no 'availability' property" });
-    }
 
     // Find the slots for the desired day
-    const daySlots = lecturer.availability.find((slot) => slot.day === day);
+    let daySlots = lecturer.availability.find((slot) => slot.day === day);
+
+    // If no slots for the day exist, create a new availability object
+    if (!daySlots) {
+      daySlots = {
+        day: day,
+        slots: [],
+      };
+      lecturer.availability.push(daySlots);
+    }
+
+    // Check for overlapping slots
+    const overlappingSlot = daySlots.slots.find((slot) => {
+      return (
+        (start[0] >= slot.startTime && start[0] < slot.endTime) ||
+        (end[0] > slot.startTime && end[0] <= slot.endTime)
+      );
+    });
+
+    // If there is an overlapping slot, return an error
+    if (overlappingSlot) {
+      req.flash("error", "The selected slot overlaps with an existing slot");
+      return res.redirect("/set-lecturer-availability");
+    }
 
     // Create a new slot object
     const newSlot = {
@@ -37,23 +47,14 @@ exports.postLecturerAvailabilityForm = async (req, res) => {
       maxStudents: parseInt(maxStudents[0]), // Convert the first element of the array to a number
     };
 
-    // If slots for the day already exist, append the new slot; otherwise, create a new array with the slot
-    if (daySlots) {
-      daySlots.slots.push(newSlot);
-    } else {
-      const newAvailability = {
-        day: day,
-        slots: [newSlot],
-      };
-      lecturer.availability.push(newAvailability);
-    }
+    // Add the new slot to the day's slots array
+    daySlots.slots.push(newSlot);
 
     // Save the changes to the database
     await lecturer.save();
-    logger.logAction("Lecturer added an availability slot", lecturer.name)
+
     // Redirect back to the dashboard
     res.redirect("/set-lecturer-availability");
-    // }
   } catch (err) {
     console.error(err);
     res.status(500).render("error", { errorMessage: "Server error" });

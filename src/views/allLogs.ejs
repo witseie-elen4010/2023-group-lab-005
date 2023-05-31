@@ -1,0 +1,45 @@
+<!-- view.ejs -->
+<%- include('./Partials/inAppheaderAdmin');%>
+<head>
+  <title>Logs</title>
+  <style>
+    .table {
+      width: 60%;
+    }
+    .table th {
+      background-color: #ffab06;
+    }
+    .text-center {
+      text-align: center;
+    }
+  </style>
+</head>
+<main class="d-flex justify-content-center align-items-center flex-column mt-5">
+  <h5>All your onsite activities</h5>
+
+  <% if (logs.length === 0) { %>
+    <p>No logs found.</p>
+  <% } else { %>
+    <table class="table sm-table table-bordered">
+      <thead>
+        <tr>
+         
+          <th>Action</th>
+          <th>Initiator</th>
+          <th>Timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% logs.forEach((log) => { %>
+          <tr>
+            
+            <td><%= log.action %></td>
+            <td><%= log.initiator %></td>
+            <td><%= log.timestamp %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</main>
+

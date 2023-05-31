@@ -31,8 +31,7 @@ jobs:
           npm install supertest
           npm install coveralls --save-dev  # install coveralls
           npm run build --if-present
-          cd src && npm run test -- -u
-          cd src && npm run test -- --coverage
+          cd src && npm run test -- -u --coverage
 
           
 
