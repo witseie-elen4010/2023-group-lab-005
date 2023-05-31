@@ -83,15 +83,15 @@ test('student can sign-in', async ({ page }) => {
  });
 
  test('student join consultation', async ({ page }) => {
-  await page.goto('https://consultify.azurewebsites.net/');
-  await page.getByRole('button', { name: 'Sign in' }).click();
-  await page.getByRole('link', { name: 'Student' }).click();
-  await page.getByPlaceholder('Email').click();
-  await page.getByPlaceholder('Email').fill('studentTest@students.wits.ac.za');
-  await page.getByPlaceholder('Password').click();
-  await page.getByPlaceholder('Password').fill('P@ssword');
-  await page.getByRole('main').getByRole('button', { name: 'Sign in' }).click();
-  await page.locator('div:nth-child(2) > .card > .card-body > .mt-5 > .btn').click();
+await page.goto('https://consultify.azurewebsites.net/');
+await page.getByRole('button', { name: 'Sign in' }).click();
+await page.getByRole('link', { name: 'Student' }).click();
+await page.getByPlaceholder('Email').click();
+await page.getByPlaceholder('Email').fill('studentTest@students.wits.ac.za');
+await page.getByPlaceholder('Password').click();
+await page.getByPlaceholder('Password').fill('P@ssword');
+await page.getByRole('main').getByRole('button', { name: 'Sign in' }).click();
+await page.getByRole('button', { name: 'Join' }).click();
  });
 
  test('Lecturer can sign out', async ({ page }) => {
