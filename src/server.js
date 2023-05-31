@@ -9,16 +9,10 @@ const adminRoutes = require('./routes/adminRouter'); // Import the admin router
 const connectDB = require('./db');
 const flash = require('express-flash');
 const session = require('express-session');
-const studentAuthRoutes = require("./routes/studentRouter");
-const lecturerAuthRoutes = require("./routes/lecturerRouter");
-const studentLogRoutes = require("./routes/logRouter");
-const consultationRoutes = require("./routes/consultationRouter");
-const connectDB = require("./db");
-const flash = require("express-flash");
-const session = require("express-session");
 const Agenda = require("agenda"); 
 const mailer = require("./controllers/emailController");
 const Consultation = require("./models/consultationModel");
+
 
 
 app.use('/public/', express.static('./public'));
@@ -98,10 +92,10 @@ const sendConsultationEmails = async () => {
       const attendees = consultation.attendees;
       const message = "Hello, This is a reminder of a meeting at " + consultation.startTime
 
-      // Send email to lecturer
+      // // Send email to lecturer
       await mailer.sendEmail(lecturerEmail, message);
 
-      // Send email to attendees
+      // // Send email to attendees
       for (const attendee of attendees) {
         await mailer.sendEmail(attendee, message);
       }

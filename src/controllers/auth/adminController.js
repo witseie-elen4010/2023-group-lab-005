@@ -47,3 +47,19 @@ exports.postAdminSignIn = async (req, res) => {
     }
   };
   
+  // controllers/adminController.js
+
+const Lecturer = require('../../models/lecturerModel');
+const Student = require('../../models/studentModel');
+
+exports.getDashboard = async (req, res) => {
+  try {
+    const lecturers = await Lecturer.find({});
+    const students = await Student.find({});
+
+    res.render('adminDashboard', { lecturers, students });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server Error');
+  }
+};
