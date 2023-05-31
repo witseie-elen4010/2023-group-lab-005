@@ -2,7 +2,8 @@ const jwt = require("jsonwebtoken");
 const Student = require("../../models/studentModel");
 const logger = require("../../controllers/logController");
 const bcrypt = require('bcryptjs')
-const mailer = require("../../controllers/emailerController");
+const mailer = require("../../controllers/emailController");
+
 
 // Render the sign-up form
 exports.getSignUp = (req, res) => {
