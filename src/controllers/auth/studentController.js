@@ -2,6 +2,8 @@ const jwt = require("jsonwebtoken");
 const Student = require("../../models/studentModel");
 const logger = require("../../controllers/logController");
 const bcrypt = require('bcryptjs')
+const mailer = require("../../controllers/emailController");
+
 
 // Render the sign-up form
 exports.getSignUp = (req, res) => {
@@ -115,4 +117,71 @@ exports.bookConsultation = async (req, res) => {
   await student.save();
 
   res.redirect("/student-dashboard");
+};
+
+exports.getResetForm = (req, res) => {
+  res.render("./auth/student/resetPassword");
+};
+exports.resetPassword = async (req, res) => {
+  const { email } = req.body;
+
+  // Check if user with provided email exists
+  const student = await Student.findOne({ email });
+
+  if (!student) {
+    req.flash("error", "User with this email does not exist");
+    return res.status(401).redirect("/reset-password");
+  }
+  const message =
+    "Follow the link to reset password: " +
+    `https://consultify.azurewebsites.net/passwordreset${student._id}`;
+  mailer.sendEmail(email, message);
+  req.flash("Success", "Check your email to reset password");
+  return res.status(200).redirect("/reset-password");
+};
+
+exports.resetPasswordForm = async (req, res) => {
+  const userId = req.params.userId;
+  res.render("./auth/student/newPassword", { userId });
+};
+
+exports.newPassword = async (req, res) => {
+  const { userId } = req.params;
+  const { password, confirmPassword } = req.body;
+
+  // Validate if the passwords match
+  if (password !== confirmPassword) {
+    req.flash("error", "Passwords do not match");
+    return res.redirect(`/resetpassword/${userId}`);
+  }
+
+  const passwordRegEx = /^(?=.*[A-Z])(?=.*[!@#$&*]).{8,}$/;
+  if (!passwordRegEx.test(password)) {
+    req.flash(
+      "error",
+      "Password must be at least 8 characters, have at least 1 capital letter and 1 special character"
+    );
+    return res.redirect(`/resetpassword/${userId}`);
+  }
+
+  try {
+    // Find the user by their ID
+    const student = await Student.findById(userId);
+
+    if (!student) {
+      req.flash("error", "Invalid reset link");
+      return res.redirect("/reset-password");
+    }
+
+    // Set the new password
+    student.password = bcrypt.hashSync(password);
+    await student.save();
+
+    req.flash("success", "Password reset successfully");
+    return res.redirect("/student-login");
+  } catch (err) {
+    console.error("Error resetting password:", err);
+    req.flash("error", "Failed to reset password");
+    return res.redirect(`/reset-password/${userId}`);
+  }
 };
