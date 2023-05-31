@@ -60,3 +60,36 @@ test('student can sign-in', async ({ page }) => {
   await page.getByPlaceholder('Password').fill('Adm!n123');
   await page.getByRole('main').getByRole('button', { name: 'Sign in' }).click();
  });
+
+ test('Lecturer create consultation', async ({ page }) => {
+  await page.goto('https://consultify.azurewebsites.net/');
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await page.getByRole('link', { name: 'Lecturer' }).click();
+  await page.getByPlaceholder('Email').click();
+  await page.getByPlaceholder('Email').fill('lecturerTest@wits.ac.za');
+  await page.getByPlaceholder('Password').click();
+  await page.getByPlaceholder('Password').fill('P@ssword');
+  await page.getByRole('main').getByRole('button', { name: 'Sign in' }).click();
+  await page.getByRole('button', { name: ' Add slot' }).click();
+  await page.getByRole('combobox', { name: 'Select day:' }).selectOption('Tuesday');
+  await page.locator('#start').click();
+  await page.locator('#start').fill('12:00');
+  await page.locator('#end').click();
+  await page.locator('#end').fill('13:00');
+  await page.getByPlaceholder('Max students').click();
+  await page.getByPlaceholder('Max students').fill('3');
+  await page.getByPlaceholder('Max students').click();
+  await page.getByRole('button', { name: 'Save availability' }).click();
+ });
+
+ test('student join consultation', async ({ page }) => {
+  await page.goto('https://consultify.azurewebsites.net/');
+  await page.getByRole('button', { name: 'Sign in' }).click();
+  await page.getByRole('link', { name: 'Student' }).click();
+  await page.getByPlaceholder('Email').click();
+  await page.getByPlaceholder('Email').fill('studentTest@students.wits.ac.za');
+  await page.getByPlaceholder('Password').click();
+  await page.getByPlaceholder('Password').fill('P@ssword');
+  await page.getByRole('main').getByRole('button', { name: 'Sign in' }).click();
+  await page.locator('div:nth-child(2) > .card > .card-body > .mt-5 > .btn').click();
+ });
