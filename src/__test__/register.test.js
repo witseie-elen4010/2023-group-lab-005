@@ -900,5 +900,75 @@ describe('Agenda job', () => {
     expect(mockAgenda.define).toHaveBeenCalledWith("send email", expect.any(Function));
     expect(mockAgenda.processEvery).toHaveBeenCalledWith("2 hours");
     expect(mockAgenda.start).toHaveBeenCalled();
+  })
+})
+
+const { resetPassword } = require('../controllers/auth/studentController'); 
+
+
+
+
+jest.mock('../controllers/auth/studentController');
+jest.mock("../controllers/emailController");
+
+describe('resetPassword function', () => {
+  let req;
+  let res;
+  let redirectMock;
+  let flashMock;
+  let findOneMock;
+  let sendEmailMock;
+
+  beforeEach(() => {
+    req = {
+      body: {
+        email: 'test@example.com',
+      },
+      flash: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+      redirect: jest.fn(),
+    };
+
+    res = {};
+
+    redirectMock = jest.spyOn(req, 'redirect');
+    flashMock = jest.spyOn(req, 'flash');
+    findOneMock = jest.fn();
+    sendEmailMock = jest.fn();
   });
-});
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('should send email and redirect on successful password reset request', async () => {
+    const studentMock = {
+      _id: 'user123',
+    };
+
+    Student.findOne.mockResolvedValueOnce(studentMock);
+
+    await resetPassword(req, res);
+
+    expect(Student.findOne).toHaveBeenCalledWith({ email: 'test@example.com' });
+    expect(mailer.sendEmail).toHaveBeenCalledWith(
+      'test@example.com',
+      'Follow the link to reset password: https://consultify.azurewebsites.net/passwordresetuser123'
+    );
+    expect(flashMock).toHaveBeenCalledWith('Success', 'Check your email to reset password');
+    expect(redirectMock).toHaveBeenCalledWith('/reset-password');
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  it('should handle user not found', async () => {
+    Student.findOne.mockResolvedValueOnce(null);
+
+    await resetPassword(req, res);
+
+    expect(Student.findOne).toHaveBeenCalledWith({ email: 'test@example.com' });
+    expect(flashMock).toHaveBeenCalledWith('error', 'User with this email does not exist');
+    expect(redirectMock).toHaveBeenCalledWith('/reset-password');
+    expect(res.status).toHaveBeenCalledWith(401);
+  });
+
+})
