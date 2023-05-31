@@ -87,16 +87,19 @@ const sendConsultationEmails = async () => {
     // Iterate over each consultation
     for (const consultation of consultations) {
       const lecturerEmail = consultation.lecturerEmail;
-  
-      const message = "Hello, this is a scheduled email for the consultation.";
+      const attendees = consultation.attendees;
+      const message = "Hello, This is a reminder of a meeting at " + consultation.startTime
 
       // Send email to lecturer
       await mailer.sendEmail(lecturerEmail, message);
 
-     
+      // Send email to attendees
+      for (const attendee of attendees) {
+        await mailer.sendEmail(attendee, message);
+      }
     }
+    
 
-    console.log("Emails sent successfully");
   } catch (err) {
     console.error("Error sending emails:", err);
   }
