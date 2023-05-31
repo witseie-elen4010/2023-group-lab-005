@@ -6,6 +6,8 @@ const logController = require("../controllers/logController");
 
 // Route to view logs
 router.get("/logs", logController.viewLogs);
+// Route to view logs
+router.get("/logs-lec", logController.viewLogsLec);
 
 // Route to view logs
 router.get("/all-logs", logController.viewAllLogs);
