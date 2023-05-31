@@ -24,7 +24,7 @@ jobs:
         MONGO_URI: ${{secrets.MONGO_URI}}
       run: |
         cd src
-        npx playwright test
+        npx playwright test tests/
     - uses: actions/upload-artifact@v3
       if: always()
       with:
