@@ -972,3 +972,58 @@ describe('resetPassword function', () => {
   });
 
 })
+
+// tests/adminController.test.js
+
+
+
+const adminController = require('../controllers/adminController');
+
+
+app.delete('/lecturer/:id', adminController.deleteLecturer);
+app.delete('/student/:id', adminController.deleteStudent);
+
+jest.mock('../models/Lecturer');
+jest.mock('../models/Student');
+
+describe('Admin Controller', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('deleteLecturer responds with 404 for non-existent lecturer', async () => {
+    Lecturer.deleteOne.mockResolvedValue({ deletedCount: 0 });
+
+    const response = await request(app).delete('/lecturer/1');
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ msg: 'Lecturer not found' });
+  });
+
+  test('deleteLecturer responds with 200 for successful deletion', async () => {
+    Lecturer.deleteOne.mockResolvedValue({ deletedCount: 1 });
+
+    const response = await request(app).delete('/lecturer/1');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ msg: 'Lecturer removed' });
+  });
+
+  test('deleteStudent responds with 404 for non-existent student', async () => {
+    Student.deleteOne.mockResolvedValue({ deletedCount: 0 });
+
+    const response = await request(app).delete('/student/1');
+
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ msg: 'Student not found' });
+  });
+
+  test('deleteStudent responds with 200 for successful deletion', async () => {
+    Student.deleteOne.mockResolvedValue({ deletedCount: 1 });
+
+    const response = await request(app).delete('/student/1');
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({ msg: 'Student removed' });
+  });
+});
