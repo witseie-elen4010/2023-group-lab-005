@@ -2,7 +2,7 @@
 
 <main class="d-flex justify-content-center align-items-center flex-column mt-5">
   <% if (lecturer.availability && lecturer.availability.length > 0) { %>
-  <h5 style="text-align: center"><%= lecturer.name %></h5>
+  <h5 style="text-align: center"> Hello, <%= lecturer.name %></h5>
 
   <% let groupedSlots = {}; %> <% lecturer.availability.forEach((slot) => { %>
   <% if (slot.slots.length > 0) { %> <% slot.slots.forEach((timeSlot) => { %> <%
@@ -45,7 +45,7 @@
     </tbody>
   </table>
   <% }); %> <% } else { %>
-  <p>No available slots for <%= lecturer.name %></p>
+  <p style="font-size: small;">No available slots for <%= lecturer.name %></p>
   <% } %> <% if (messages.error) { %>
   <div class="alert alert-danger err-btn"><%= messages.error %></div>
   <% } %>

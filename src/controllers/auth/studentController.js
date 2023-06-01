@@ -130,14 +130,14 @@ exports.resetPassword = async (req, res) => {
 
   if (!student) {
     req.flash("error", "User with this email does not exist");
-    return res.status(401).redirect("/reset-password");
+    return res.status(401).redirect("/reset-password-student");
   }
   const message =
     "Follow the link to reset password: " +
-    `https://consultify.azurewebsites.net/passwordreset${student._id}`;
+    `https://consultify.azurewebsites.net/passwordreset-student/${student._id}`;
   mailer.sendEmail(email, message);
   req.flash("Success", "Check your email to reset password");
-  return res.status(200).redirect("/reset-password");
+  return res.status(200).redirect("/reset-password-student");
 };
 
 exports.resetPasswordForm = async (req, res) => {
@@ -152,7 +152,7 @@ exports.newPassword = async (req, res) => {
   // Validate if the passwords match
   if (password !== confirmPassword) {
     req.flash("error", "Passwords do not match");
-    return res.redirect(`/resetpassword/${userId}`);
+    return res.redirect(`/resetpassword-student/${userId}`);
   }
 
   const passwordRegEx = /^(?=.*[A-Z])(?=.*[!@#$&*]).{8,}$/;
@@ -161,7 +161,7 @@ exports.newPassword = async (req, res) => {
       "error",
       "Password must be at least 8 characters, have at least 1 capital letter and 1 special character"
     );
-    return res.redirect(`/resetpassword/${userId}`);
+    return res.redirect(`/resetpassword-student/${userId}`);
   }
 
   try {
@@ -170,7 +170,7 @@ exports.newPassword = async (req, res) => {
 
     if (!student) {
       req.flash("error", "Invalid reset link");
-      return res.redirect("/reset-password");
+      return res.redirect("/reset-password-student");
     }
 
     // Set the new password
@@ -182,6 +182,6 @@ exports.newPassword = async (req, res) => {
   } catch (err) {
     console.error("Error resetting password:", err);
     req.flash("error", "Failed to reset password");
-    return res.redirect(`/reset-password/${userId}`);
+    return res.redirect(`/reset-password-student/${userId}`);
   }
 };
