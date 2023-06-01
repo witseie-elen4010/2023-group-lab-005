@@ -17,13 +17,25 @@ exports.postLecturerAvailabilityForm = async (req, res) => {
     // Find the slots for the desired day
     let daySlots = lecturer.availability.find((slot) => slot.day === day);
 
+     // Create a new slot object
+     const newSlot = {
+      startTime: start[0], // Get the first element of the array
+      endTime: end[0], // Get the first element of the array
+      maxStudents: parseInt(maxStudents[0]), // Convert the first element of the array to a number
+    };
+
     // If no slots for the day exist, create a new availability object
     if (!daySlots) {
       daySlots = {
         day: day,
-        slots: [],
+        slots: [newSlot],
       };
       lecturer.availability.push(daySlots);
+
+    // Add the new slot to the day's slots array
+    daySlots.slots.push(newSlot);
+      await lecturer.save();
+      return res.redirect("/set-lecturer-availability");
     }
 
     // Check for overlapping slots
@@ -40,12 +52,7 @@ exports.postLecturerAvailabilityForm = async (req, res) => {
       return res.redirect("/set-lecturer-availability");
     }
 
-    // Create a new slot object
-    const newSlot = {
-      startTime: start[0], // Get the first element of the array
-      endTime: end[0], // Get the first element of the array
-      maxStudents: parseInt(maxStudents[0]), // Convert the first element of the array to a number
-    };
+
 
     // Add the new slot to the day's slots array
     daySlots.slots.push(newSlot);
