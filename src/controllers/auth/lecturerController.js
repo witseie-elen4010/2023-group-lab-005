@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const Lecturer = require("../../models/lecturerModel");
 const logger = require("../../controllers/logController");
 const bcrypt = require('bcryptjs')
+const mailer = require("../../controllers/emailController");
 
 // Render the sign-up form
 exports.getSignUp = (req, res) => {
@@ -118,18 +119,18 @@ exports.resetPassword = async (req, res) => {
   const { email } = req.body;
 
   // Check if user with provided email exists
-  const lecturer = await lecturer.findOne({ email });
+  const lecturer = await Lecturer.findOne({ email });
 
   if (!lecturer) {
     req.flash("error", "User with this email does not exist");
-    return res.status(401).redirect("/reset-password");
+    return res.status(401).redirect("/reset-password-lecturer");
   }
   const message =
     "Follow the link to reset password: " +
-    `https://consultify.azurewebsites.net/passwordreset${lecturer._id}`;
+    `https://consultify.azurewebsites.net/passwordreset-lecturer/${lecturer._id}`;
   mailer.sendEmail(email, message);
   req.flash("Success", "Check your email to reset password");
-  return res.status(200).redirect("/reset-password");
+  return res.status(200).redirect("/reset-password-lecturer");
 };
 
 exports.resetPasswordForm = async (req, res) => {
@@ -144,7 +145,7 @@ exports.newPassword = async (req, res) => {
   // Validate if the passwords match
   if (password !== confirmPassword) {
     req.flash("error", "Passwords do not match");
-    return res.redirect(`/resetpassword/${userId}`);
+    return res.redirect(`/resetpassword-lecturer/${userId}`);
   }
 
   const passwordRegEx = /^(?=.*[A-Z])(?=.*[!@#$&*]).{8,}$/;
@@ -153,7 +154,7 @@ exports.newPassword = async (req, res) => {
       "error",
       "Password must be at least 8 characters, have at least 1 capital letter and 1 special character"
     );
-    return res.redirect(`/resetpassword/${userId}`);
+    return res.redirect(`/resetpassword-lecturer/${userId}`);
   }
 
   try {
@@ -162,7 +163,7 @@ exports.newPassword = async (req, res) => {
 
     if (!lecturer) {
       req.flash("error", "Invalid reset link");
-      return res.redirect("/reset-password");
+      return res.redirect("/reset-password-lecturer");
     }
 
     // Set the new password
@@ -174,6 +175,6 @@ exports.newPassword = async (req, res) => {
   } catch (err) {
     console.error("Error resetting password:", err);
     req.flash("error", "Failed to reset password");
-    return res.redirect(`/reset-password/${userId}`);
+    return res.redirect(`/reset-password-lecturer/${userId}`);
   }
 };
