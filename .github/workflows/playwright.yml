@@ -23,7 +23,7 @@ jobs:
       env:
         MONGO_URI: ${{secrets.MONGO_URI}}
       run:
-        npx playwright test tests/
+        npx playwright test
     - uses: actions/upload-artifact@v3
       if: always()
       with:
