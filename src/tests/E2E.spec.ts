@@ -66,14 +66,13 @@ test('student can sign-in', async ({ page }) => {
   await page.getByPlaceholder('Password').fill('P@ssword');
   await page.getByRole('main').getByRole('button', { name: 'Sign in' }).click();
   await page.getByRole('button', { name: ' Add slot' }).click();
-  await page.getByRole('combobox', { name: 'Select day:' }).selectOption('Tuesday');
+  await page.getByRole('combobox').selectOption('Tuesday');
   await page.locator('#start').click();
   await page.locator('#start').fill('12:00');
   await page.locator('#end').click();
   await page.locator('#end').fill('13:00');
   await page.getByPlaceholder('Max students').click();
   await page.getByPlaceholder('Max students').fill('3');
-  await page.getByPlaceholder('Max students').click();
   await page.getByRole('button', { name: 'Save availability' }).click();
  });
 
