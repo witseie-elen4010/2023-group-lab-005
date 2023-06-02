@@ -1,16 +1,18 @@
 <%- include('./Partials/inAppheaderLec');%>
 
 <main class="container">
+  <h3 class="text-center mt-5 mb-5">Upcoming Consultations</h3>
   <div class="container d-flex flex-column justify-content-center">
-    <div class="col-12 col-md-4 col-sm-12">
+    
+    <div class="col-12 col-md-12 col-sm-12">
 
-      <h1>Upcoming Consultations</h1>
+     
       <% if (upcomingConsultations.length === 0) { %>
         <p>No upcoming consultations found.</p>
       <% } else { %>
         <% upcomingConsultations.forEach((consultation) => { %>
           
-          <div class="card mb-4" >
+          <div class="card mb-4" style="width: 25rem; margin-left: auto; margin-right: auto;">
             <div class="card-header" style="background-color: #031a39; color: #ffab06">
               <p class="card-title text-center ml-4" style="font-weight: bold">
                 Consultation on
