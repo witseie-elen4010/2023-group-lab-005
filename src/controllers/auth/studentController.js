@@ -178,7 +178,8 @@ exports.newPassword = async (req, res) => {
     await student.save();
 
     req.flash("success", "Password reset successfully");
-    return res.redirect("/student-login");
+    return res.redirect("/login-student");
+
   } catch (err) {
     console.error("Error resetting password:", err);
     req.flash("error", "Failed to reset password");
