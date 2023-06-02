@@ -12,9 +12,7 @@ exports.renderConsultationSetup = (req, res) => {
 // Controller method for handling the submission of the consultation setup form
 exports.createConsultation = async (req, res) => {
   try {
-    // Retrieve form data from the request body
-    const { attendees, lecturerEmail, maxStudents, day, startTime, endTime } =
-      req.body;
+    const { attendees, lecturerEmail, maxStudents, day, startTime, endTime, eventTittle } = req.body;
 
     // Find the lecturer and update their availability
     const lecturer = await Lecturer.findOne({ email: lecturerEmail });
@@ -22,6 +20,23 @@ exports.createConsultation = async (req, res) => {
     if (!lecturer) {
       console.log("Error: Lecturer not found");
       req.flash("error", "Lecturer not found");
+      return res.redirect("/see-lecturer-availability");
+    }
+
+    // Check if there is any overlapping consultation for the same day and time
+    const overlappingConsultation = await Consultation.findOne({
+      day,
+      $or: [
+        { $and: [{ startTime: { $lte: startTime } }, { endTime: { $gte: startTime } }] },
+        { $and: [{ startTime: { $lte: endTime } }, { endTime: { $gte: endTime } }] },
+        { $and: [{ startTime: { $gte: startTime } }, { endTime: { $lte: endTime } }] }
+      ],
+      attendees: { $in: attendees.split(",").map((email) => email.trim()) }
+    });
+
+    if (overlappingConsultation) {
+      console.log("Error: Overlapping consultation found for one of the attendees");
+      req.flash("error", "One of the attendees is already attending an overlapping consultation on the same day");
       return res.redirect("/see-lecturer-availability");
     }
 
@@ -50,10 +65,8 @@ exports.createConsultation = async (req, res) => {
     console.log("Slot booked successfully");
     req.flash("success", "Slot booked successfully");
 
-    // Split the attendees string into an array of email addresses
     const attendeesArray = attendees.split(",").map((email) => email.trim());
 
-    // Create a new consultation object
     const consultation = new Consultation({
       attendees: attendeesArray,
       lecturerEmail,
@@ -61,9 +74,9 @@ exports.createConsultation = async (req, res) => {
       day,
       startTime,
       endTime,
+      eventTittle
     });
 
-    // Save the consultation to the database
     await consultation.save();
     logger.logAction("Consultation creation", lecturerEmail)
     console.log("Consultation has been set up successfully");
@@ -78,16 +91,13 @@ exports.createConsultation = async (req, res) => {
 
 exports.getAllConsultations = async (req, res) => {
   try {
-    // Get the student's email from the session
     const studentEmail = req.session.email;
 
     // Find all consultations
     const consultations = await Consultation.find();
 
     // Fetch lecturer names based on email
-    const lecturerEmails = consultations.map(
-      (consultation) => consultation.lecturerEmail
-    );
+    const lecturerEmails = consultations.map((consultation) => consultation.lecturerEmail);
     const lecturers = await Lecturer.find({ email: { $in: lecturerEmails } });
 
     // Create a map of lecturer emails to names
@@ -96,18 +106,30 @@ exports.getAllConsultations = async (req, res) => {
       lecturerMap[lecturer.email] = lecturer.name;
     });
 
-    // Filter consultations where the student is an attendee
+    // Find overlapping consultations for the student
+    const overlappingConsultations = await Consultation.find({
+      day: { $in: consultations.map((consultation) => consultation.day) },
+      $or: [
+        { startTime: { $lte: consultations.map((consultation) => consultation.startTime)[0] }, endTime: { $gte: consultations.map((consultation) => consultation.startTime)[0] } },
+        { startTime: { $lte: consultations.map((consultation) => consultation.endTime)[0] }, endTime: { $gte: consultations.map((consultation) => consultation.endTime)[0] } },
+        { startTime: { $gte: consultations.map((consultation) => consultation.startTime)[0] }, endTime: { $lte: consultations.map((consultation) => consultation.endTime)[0] } }
+      ],
+      attendees: studentEmail
+    });
+    
+    
+
+    // Filter consultations where the student is an attendee and not part of overlapping consultations
     const attendedConsultations = consultations.filter((consultation) => {
-      return consultation.attendees.includes(studentEmail);
+      return (
+        consultation.attendees.includes(studentEmail) &&
+        !overlappingConsultations.includes(consultation)
+      );
     });
 
     // Fetch lecturer names for attended consultations
-    const attendedLecturerEmails = attendedConsultations.map(
-      (consultation) => consultation.lecturerEmail
-    );
-    const attendedLecturers = await Lecturer.find({
-      email: { $in: attendedLecturerEmails },
-    });
+    const attendedLecturerEmails = attendedConsultations.map((consultation) => consultation.lecturerEmail);
+    const attendedLecturers = await Lecturer.find({ email: { $in: attendedLecturerEmails } });
 
     // Create a map of lecturer emails to names for attended consultations
     const attendedLecturerMap = {};
@@ -115,21 +137,18 @@ exports.getAllConsultations = async (req, res) => {
       attendedLecturerMap[lecturer.email] = lecturer.name;
     });
 
-    // Filter consultations where the student is not an attendee and attendees are less than maxStudents
+    // Filter consultations where the student is not an attendee, attendees are less than maxStudents, and not part of overlapping consultations
     const notAttendedConsultations = consultations.filter((consultation) => {
       return (
         !consultation.attendees.includes(studentEmail) &&
-        consultation.attendees.length < consultation.maxStudents
+        consultation.attendees.length < consultation.maxStudents &&
+        !overlappingConsultations.includes(consultation)
       );
     });
 
     // Fetch lecturer names for not attended consultations
-    const notAttendedLecturerEmails = notAttendedConsultations.map(
-      (consultation) => consultation.lecturerEmail
-    );
-    const notAttendedLecturers = await Lecturer.find({
-      email: { $in: notAttendedLecturerEmails },
-    });
+    const notAttendedLecturerEmails = notAttendedConsultations.map((consultation) => consultation.lecturerEmail);
+    const notAttendedLecturers = await Lecturer.find({ email: { $in: notAttendedLecturerEmails } });
 
     // Create a map of lecturer emails to names for not attended consultations
     const notAttendedLecturerMap = {};
@@ -150,15 +169,22 @@ exports.getAllConsultations = async (req, res) => {
   }
 };
 
+
 // Controller for consultation cancellation
 exports.cancelConsultation = async (req, res) => {
   try {
     const { id } = req.params;
     const consultation = await Consultation.findById(id);
+    const lecturer = consultation.lecturerEmail
+    const studentEmail = req.session.email;
+    
 
+    const student = await Student.findOne({ email: studentEmail });
+
+    const name= student.name
     const oldTime = consultation.startTime;
     const day = consultation.day;
-    const lecturer = consultation.lecturerEmail;
+   
 
     // Find the consultation by ID and remove it
     await Consultation.findByIdAndRemove(id);
@@ -167,7 +193,7 @@ exports.cancelConsultation = async (req, res) => {
 
    
     await mailer.sendEmail(lecturer, message);
-    logger.logAction("Consultation cancellation", lecturer)
+    logger.logAction("Consultation cancellation", name)
 
     // Redirect to the student dashboard or any other desired page
     res.redirect("/student-dashboard");
@@ -182,6 +208,13 @@ exports.joinConsultation = async (req, res) => {
   try {
     const { id } = req.params;
     const userEmail = req.session.email;
+
+    const studentEmail = req.session.email;
+    
+
+    const student = await Student.findOne({ email: studentEmail });
+
+    const name= student.name
 
     // Find the consultation by ID
     const consultation = await Consultation.findById(id);
@@ -211,7 +244,7 @@ exports.joinConsultation = async (req, res) => {
 
     // Save the updated consultation
     await consultation.save();
-    logger.logAction("Consultation joining", userEmail)
+    logger.logAction("Consultation joining", name)
     console.log("User joined the consultation successfully");
     req.flash("success", "You have joined the consultation successfully");
 
@@ -315,7 +348,7 @@ exports.cancelConsultationLec = async (req, res) => {
     for (let i = 0; i < students.length; i++) {
       await mailer.sendEmail(students[i], message);
     }
-
+    logger.logAction("Consultation Cancellation", consultation.lecturerEmail)
     // Redirect to the student dashboard or any other desired page
     res.redirect("/lecturer-dashboard");
   } catch (error) {

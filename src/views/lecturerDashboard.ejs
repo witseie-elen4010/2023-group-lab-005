@@ -1,37 +1,38 @@
 <%- include('./Partials/inAppheaderLec');%>
 
 <main class="container">
+  <h3 class="text-center mt-5 mb-5">Upcoming Consultations</h3>
   <div class="container d-flex flex-column justify-content-center">
-    <div class="col-12 col-md-4 col-sm-12">
+    
+    <div class="col-12 col-md-12 col-sm-12">
 
-      <h1>Upcoming Consultations</h1>
+     
       <% if (upcomingConsultations.length === 0) { %>
         <p>No upcoming consultations found.</p>
       <% } else { %>
         <% upcomingConsultations.forEach((consultation) => { %>
           
-          <div class="card mb-4" >
+          <div class="card mb-4" style="width: 25rem; margin-left: auto; margin-right: auto;">
             <div class="card-header" style="background-color: #031a39; color: #ffab06">
               <p class="card-title text-center ml-4" style="font-weight: bold">
-                Consultation on
+                <%= consultation.eventTittle %>
                 <button style="background-color: #031a39; border-color: #031a39; margin-top: auto; margin-left: auto;" type="button" class="btn btn-primary" data-toggle="modal" data-target="#editModal<%= consultation._id %>">
                   <i class="fa-solid fa-pen-to-square"></i>
                 </button>
               </p>
-              <p class="text-center" style="color: #aaa; font-weight: 300; font-size: small">
-                <%= consultation.day %>
-              </p>
+            
             </div>
             <div class="card-body">
               <p class="card-text" style="color: #aaa; font-weight: 300; font-size: small">
                 <%= consultation.attendees.length %> Attendees
               </p>
-              <p class="card-text"><%= consultation.day %></p>
+              <p class="card-text">  <i class="fa-regular fa-calendar mr-1"> </i><%= consultation.day %></p>
               <div class="card-text mt-2 mb-1" style="color: #aaa; font-weight: 300; font-size: small">
-                <%= consultation.startTime %> - <%= consultation.endTime %>
+                <i class="fa-regular fa-clock"></i>  <%= consultation.startTime %> - <%= consultation.endTime %>
               </div>
+              <i class="fa-solid fa-user-group"></i> Attendees
               <% consultation.attendeeNames.forEach((name) => { %>
-                <p class="card-text">Attendee Name: <%= name %></p>
+                 <p class="card-text"> <%= name %></p>
               <% }); %>
               <form action="/cancel-consultationLec/<%= consultation._id %>" method="POST">
                 <button type="submit" class="btn btn-danger" style="width: 100%">Cancel Consultation</button>

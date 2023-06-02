@@ -25,6 +25,12 @@ const consultationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+
+  eventTittle:{
+    type: String,
+    required: true,
+    default: " Consultation"
+  }
 });
 
 const Consultation = mongoose.model("Consultation", consultationSchema);
