@@ -12,9 +12,7 @@ exports.renderConsultationSetup = (req, res) => {
 // Controller method for handling the submission of the consultation setup form
 exports.createConsultation = async (req, res) => {
   try {
-    // Retrieve form data from the request body
-    const { attendees, lecturerEmail, maxStudents, day, startTime, endTime,eventTittle  } =
-      req.body;
+    const { attendees, lecturerEmail, maxStudents, day, startTime, endTime, eventTittle } = req.body;
 
     // Find the lecturer and update their availability
     const lecturer = await Lecturer.findOne({ email: lecturerEmail });
@@ -22,6 +20,23 @@ exports.createConsultation = async (req, res) => {
     if (!lecturer) {
       console.log("Error: Lecturer not found");
       req.flash("error", "Lecturer not found");
+      return res.redirect("/see-lecturer-availability");
+    }
+
+    // Check if there is any overlapping consultation for the same day and time
+    const overlappingConsultation = await Consultation.findOne({
+      day,
+      $or: [
+        { $and: [{ startTime: { $lte: startTime } }, { endTime: { $gte: startTime } }] },
+        { $and: [{ startTime: { $lte: endTime } }, { endTime: { $gte: endTime } }] },
+        { $and: [{ startTime: { $gte: startTime } }, { endTime: { $lte: endTime } }] }
+      ],
+      attendees: { $in: attendees.split(",").map((email) => email.trim()) }
+    });
+
+    if (overlappingConsultation) {
+      console.log("Error: Overlapping consultation found for one of the attendees");
+      req.flash("error", "One of the attendees is already attending an overlapping consultation on the same day");
       return res.redirect("/see-lecturer-availability");
     }
 
@@ -50,10 +65,8 @@ exports.createConsultation = async (req, res) => {
     console.log("Slot booked successfully");
     req.flash("success", "Slot booked successfully");
 
-    // Split the attendees string into an array of email addresses
     const attendeesArray = attendees.split(",").map((email) => email.trim());
 
-    // Create a new consultation object
     const consultation = new Consultation({
       attendees: attendeesArray,
       lecturerEmail,
@@ -64,7 +77,6 @@ exports.createConsultation = async (req, res) => {
       eventTittle
     });
 
-    // Save the consultation to the database
     await consultation.save();
     logger.logAction("Consultation creation", lecturerEmail)
     console.log("Consultation has been set up successfully");
@@ -76,6 +88,7 @@ exports.createConsultation = async (req, res) => {
 
   res.redirect("/see-lecturer-availability");
 };
+
 
 exports.getAllConsultations = async (req, res) => {
   try {
