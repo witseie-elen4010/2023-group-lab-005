@@ -89,19 +89,15 @@ exports.createConsultation = async (req, res) => {
   res.redirect("/see-lecturer-availability");
 };
 
-
 exports.getAllConsultations = async (req, res) => {
   try {
-    // Get the student's email from the session
     const studentEmail = req.session.email;
 
     // Find all consultations
     const consultations = await Consultation.find();
 
     // Fetch lecturer names based on email
-    const lecturerEmails = consultations.map(
-      (consultation) => consultation.lecturerEmail
-    );
+    const lecturerEmails = consultations.map((consultation) => consultation.lecturerEmail);
     const lecturers = await Lecturer.find({ email: { $in: lecturerEmails } });
 
     // Create a map of lecturer emails to names
@@ -110,18 +106,30 @@ exports.getAllConsultations = async (req, res) => {
       lecturerMap[lecturer.email] = lecturer.name;
     });
 
-    // Filter consultations where the student is an attendee
+    // Find overlapping consultations for the student
+    const overlappingConsultations = await Consultation.find({
+      day: { $in: consultations.map((consultation) => consultation.day) },
+      $or: [
+        { startTime: { $lte: consultations.map((consultation) => consultation.startTime)[0] }, endTime: { $gte: consultations.map((consultation) => consultation.startTime)[0] } },
+        { startTime: { $lte: consultations.map((consultation) => consultation.endTime)[0] }, endTime: { $gte: consultations.map((consultation) => consultation.endTime)[0] } },
+        { startTime: { $gte: consultations.map((consultation) => consultation.startTime)[0] }, endTime: { $lte: consultations.map((consultation) => consultation.endTime)[0] } }
+      ],
+      attendees: studentEmail
+    });
+    
+    
+
+    // Filter consultations where the student is an attendee and not part of overlapping consultations
     const attendedConsultations = consultations.filter((consultation) => {
-      return consultation.attendees.includes(studentEmail);
+      return (
+        consultation.attendees.includes(studentEmail) &&
+        !overlappingConsultations.includes(consultation)
+      );
     });
 
     // Fetch lecturer names for attended consultations
-    const attendedLecturerEmails = attendedConsultations.map(
-      (consultation) => consultation.lecturerEmail
-    );
-    const attendedLecturers = await Lecturer.find({
-      email: { $in: attendedLecturerEmails },
-    });
+    const attendedLecturerEmails = attendedConsultations.map((consultation) => consultation.lecturerEmail);
+    const attendedLecturers = await Lecturer.find({ email: { $in: attendedLecturerEmails } });
 
     // Create a map of lecturer emails to names for attended consultations
     const attendedLecturerMap = {};
@@ -129,21 +137,18 @@ exports.getAllConsultations = async (req, res) => {
       attendedLecturerMap[lecturer.email] = lecturer.name;
     });
 
-    // Filter consultations where the student is not an attendee and attendees are less than maxStudents
+    // Filter consultations where the student is not an attendee, attendees are less than maxStudents, and not part of overlapping consultations
     const notAttendedConsultations = consultations.filter((consultation) => {
       return (
         !consultation.attendees.includes(studentEmail) &&
-        consultation.attendees.length < consultation.maxStudents
+        consultation.attendees.length < consultation.maxStudents &&
+        !overlappingConsultations.includes(consultation)
       );
     });
 
     // Fetch lecturer names for not attended consultations
-    const notAttendedLecturerEmails = notAttendedConsultations.map(
-      (consultation) => consultation.lecturerEmail
-    );
-    const notAttendedLecturers = await Lecturer.find({
-      email: { $in: notAttendedLecturerEmails },
-    });
+    const notAttendedLecturerEmails = notAttendedConsultations.map((consultation) => consultation.lecturerEmail);
+    const notAttendedLecturers = await Lecturer.find({ email: { $in: notAttendedLecturerEmails } });
 
     // Create a map of lecturer emails to names for not attended consultations
     const notAttendedLecturerMap = {};
@@ -163,6 +168,7 @@ exports.getAllConsultations = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch consultations" });
   }
 };
+
 
 // Controller for consultation cancellation
 exports.cancelConsultation = async (req, res) => {
