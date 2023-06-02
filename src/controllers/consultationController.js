@@ -175,10 +175,16 @@ exports.cancelConsultation = async (req, res) => {
   try {
     const { id } = req.params;
     const consultation = await Consultation.findById(id);
+    const lecturer = consultation.lecturerEmail
+    const studentEmail = req.session.email;
+    
 
+    const student = await Student.findOne({ email: studentEmail });
+
+    const name= student.name
     const oldTime = consultation.startTime;
     const day = consultation.day;
-    const lecturer = consultation.lecturerEmail;
+   
 
     // Find the consultation by ID and remove it
     await Consultation.findByIdAndRemove(id);
@@ -187,7 +193,7 @@ exports.cancelConsultation = async (req, res) => {
 
    
     await mailer.sendEmail(lecturer, message);
-    logger.logAction("Consultation cancellation", lecturer)
+    logger.logAction("Consultation cancellation", name)
 
     // Redirect to the student dashboard or any other desired page
     res.redirect("/student-dashboard");
@@ -202,6 +208,13 @@ exports.joinConsultation = async (req, res) => {
   try {
     const { id } = req.params;
     const userEmail = req.session.email;
+
+    const studentEmail = req.session.email;
+    
+
+    const student = await Student.findOne({ email: studentEmail });
+
+    const name= student.name
 
     // Find the consultation by ID
     const consultation = await Consultation.findById(id);
@@ -231,7 +244,7 @@ exports.joinConsultation = async (req, res) => {
 
     // Save the updated consultation
     await consultation.save();
-    logger.logAction("Consultation joining", userEmail)
+    logger.logAction("Consultation joining", name)
     console.log("User joined the consultation successfully");
     req.flash("success", "You have joined the consultation successfully");
 
@@ -335,7 +348,7 @@ exports.cancelConsultationLec = async (req, res) => {
     for (let i = 0; i < students.length; i++) {
       await mailer.sendEmail(students[i], message);
     }
-
+    logger.logAction("Consultation Cancellation", consultation.lecturerEmail)
     // Redirect to the student dashboard or any other desired page
     res.redirect("/lecturer-dashboard");
   } catch (error) {
