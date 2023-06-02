@@ -127,7 +127,7 @@ exports.resetPassword = async (req, res) => {
   }
   const message =
     "Follow the link to reset password: " +
-    `https://consultify.azurewebsites.net/passwordreset-lecturer/${lecturer._id}`;
+    `https://consultify.azurewebsites.net/resetpassword-lecturer/${lecturer._id}`;
   mailer.sendEmail(email, message);
   req.flash("Success", "Check your email to reset password");
   return res.status(200).redirect("/reset-password-lecturer");
