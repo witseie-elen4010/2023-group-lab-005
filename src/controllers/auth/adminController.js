@@ -27,7 +27,7 @@ exports.generatePassword = async (req, res) => {
 
   try {
     // Check if the submitted email matches the specific admin email
-    if (email !== "itchiraira@gmail.com") {
+    if (email !== "project.consultify@gmail.com") {
       req.flash("error", "Invalid email");
       return res.status(401).redirect("/generate-password");
     }
