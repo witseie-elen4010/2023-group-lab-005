@@ -17,13 +17,15 @@
                 style="background-color: #031a39; color: #ffab06"
               >
                 <p class="card-title text-center" style="font-weight: bold">
-                  Meeting With
+                  <%=  consultation.eventTittle %>
                 </p>
                 <p
                   class="text-center"
                   style="color: #aaa; font-weight: 300; font-size: small"
                 >
-                  <%= attendedLecturerMap[consultation.lecturerEmail] %>
+                <i class="fa-solid fa-chalkboard-user"></i>   <%= attendedLecturerMap[consultation.lecturerEmail] %>
+
+                  
                 </p>
               </div>
               <div class="card-body">
@@ -76,13 +78,13 @@
                   style="background-color: #031a39; color: #ffab06"
                 >
                   <p class="card-title text-center" style="font-weight: bold">
-                    Meeting With
+                    <%=  consultation.eventTittle %>
                   </p>
                   <p
                     class="text-center"
                     style="color: #aaa; font-weight: 300; font-size: small"
                   >
-                    <%= notAttendedLecturerMap[consultation.lecturerEmail] %>
+                  <i class="fa-solid fa-chalkboard-user"></i> <%= notAttendedLecturerMap[consultation.lecturerEmail] %>
                   </p>
                 </div>
                 <div class="card-body">

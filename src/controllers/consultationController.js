@@ -13,7 +13,7 @@ exports.renderConsultationSetup = (req, res) => {
 exports.createConsultation = async (req, res) => {
   try {
     // Retrieve form data from the request body
-    const { attendees, lecturerEmail, maxStudents, day, startTime, endTime } =
+    const { attendees, lecturerEmail, maxStudents, day, startTime, endTime,eventTittle  } =
       req.body;
 
     // Find the lecturer and update their availability
@@ -61,6 +61,7 @@ exports.createConsultation = async (req, res) => {
       day,
       startTime,
       endTime,
+      eventTittle
     });
 
     // Save the consultation to the database
